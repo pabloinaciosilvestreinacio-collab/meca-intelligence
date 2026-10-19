@@ -1,9 +1,9 @@
-name: Validar Meca Intelligence Web
+name: Validar Meca Intelligence
 on:
   push:
   pull_request:
 jobs:
-  test:
+  web:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,3 +12,12 @@ jobs:
           node-version: '22'
       - run: node --test tests/*.test.js
       - run: node --check src/core.js && node --check src/lab.js
+  mih-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s tests -p 'test_mih.py' -v
+      - run: python -m compileall -q mih

@@ -67,3 +67,51 @@ O GitHub Pages é hospedagem estática: não oferece execução segura de códig
 O código **original deste laboratório web** é disponibilizado sob MIT (consulte `LICENSE`). Isso **não** altera os direitos sobre modelos/SDK exportados por terceiros. **Não publique o ZIP exportado do Edge Impulse**, pesos proprietários, código privado da equipe ou CSVs coletados no robô sem conferir permissões, privacidade e licença. Para manter os dados privados, a página processa os arquivos localmente, sem serviço backend.
 
 Não use as previsões para controle direto e automático de motores antes de validação e controles físicos de segurança.
+
+---
+
+## MECA Intelligence Hybrid — diagnóstico offline MIH-V1 (experimental)
+
+O laboratório de rede neural **acima continua disponível sem modificações**. Foi adicionado um núcleo independente em Python para organizar ensaios do Mequinha e aplicar diagnósticos matemáticos explicáveis. **Ele não comanda motores, não lê o Control Hub, não altera o Meca Sim e não valida a rede neural no robô físico.**
+
+### Comece pelo diagnóstico
+
+Requisito: Python 3.11+ (somente biblioteca padrão).
+
+```bash
+python -m unittest discover -s tests -p 'test_mih.py' -v
+python -m mih --help
+```
+
+No Meca Sim, clique em **Exportar CSV** depois da execução e guarde `meca-sim-trajetoria.csv`. No diretório raiz do MIH:
+
+```bash
+python -m mih import meca-sim-trajetoria.csv \
+  --source simulation \
+  --run-id ensaio-sim-001 \
+  --recorded-at 2026-10-19T20:00:00-03:00 \
+  --robot-config mequinha-experimental \
+  --code-version unknown \
+  --experiment-id avaliacao-giro \
+  --report local/ensaio-sim-001.md
+
+python -m mih list
+python -m mih analyze ensaio-sim-001 --report local/ensaio-revisado.md
+python -m mih compare ensaio-sim-001 ensaio-sim-002
+```
+
+**Substitua a data e os identificadores do exemplo pelos valores efetivos.** `--recorded-at` representa uma informação fornecida pelo operador; o software não a adivinha.
+
+Os dados importados ficam no banco SQLite local `local/mih.sqlite3`, ignorado pelo Git. O relatório registra [R] observações, [H] hipóteses e [P] pendências. Falta de canais gera `indeterminate`; o yaw exportado da trajetória é o ângulo real **simulado**, nunca uma leitura da IMU do Hub. O resultado da rede neural no navegador continua sendo exclusivamente experimental.
+
+Documentação: [contrato de dados MIH-V1](docs/MIH-DATA-CONTRACT-v1.md) · [auditoria M.E.C.A. e limitações](docs/MIH-ENGINEERING-AUDIT.md).
+
+### Estado das etapas
+
+- Etapa 0: contrato e auditoria registrados.
+- Etapa 1: importação CSV/JSON, validação, SQLite, regras e CLI (sujeitos a CI).
+- Etapa 2: laboratório neural existente preservado; **nenhum modelo validado em hardware**. Treinamento físico suspenso por falta de dados rotulados.
+- Etapa 3: comparação descritiva de execuções, sem otimização automática de OpModes.
+- Etapa 4: adaptador de gravações Meca Sim no importador; testes de bancada e coleta automática ainda pendentes.
+
+**Atenção:** não versione CSVs reais sem revisar privacidade e consentimento. Limiares são didáticos e não certificados.
