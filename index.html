@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MECA Neural Viewer · Meca Intelligence</title>
+<style>
+.labSection{grid-column:1/-1;padding-bottom:18px}.labBody{padding:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.labCard{border:1px solid #343d4b;border-radius:11px;background:#171d28;padding:14px;min-width:0}.labCard h3{font-size:13px;color:#ffc18c;margin:0 0 12px}.labCard p,.labCard small{font-size:12px;color:#bbc7d8}.labCard strong{font-size:18px}.labCard button{margin:5px 4px 5px 0}.labCard input[type=number]{width:85px;background:#131820;color:white;border:1px solid #566072;border-radius:7px;padding:7px}.labCard progress{width:100%;accent-color:var(--gold)}.labCard #labTest{font-size:12px;line-height:1.65;overflow-wrap:anywhere}.labBody .full{grid-column:1/-1}@media(max-width:900px){.labBody{grid-template-columns:1fr}}
+
+:root{color-scheme:dark;--bg:#090b10;--card:#131720;--muted:#9ba6b8;--line:#303746;--gold:#ff963e;--blue:#5fa8ff;--green:#57d7a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,#2a1b15 0%,transparent 60%),var(--bg);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:#e9edf4}
+header{padding:22px 28px 18px;border-bottom:1px solid #252b37;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}header h1{margin:0;font-size:21px;letter-spacing:.04em}header p{margin:4px 0 0;color:var(--muted);font-size:12px}.logo{width:38px;height:38px;display:grid;place-items:center;border:1px solid #a75924;border-radius:11px;color:var(--gold);font-size:22px}.brand{display:flex;align-items:center;gap:13px}.pill{font-size:11px;color:#eac8a4;border:1px solid #80532f;padding:6px 12px;border-radius:30px}
+main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:15px}section,.panel{background:linear-gradient(160deg,#171b25,#10131a);border:1px solid #2b313d;border-radius:14px;overflow:hidden}.mainSection{min-width:0}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #29303c}.bar h2{margin:0;font-size:15px}.bar small,.hint{color:var(--muted);font-size:11px}.tools{display:flex;gap:8px;flex-wrap:wrap}button,.fakebutton{background:#2a303b;color:#e9edf4;border:1px solid #465061;border-radius:8px;padding:9px 12px;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:5px}button:hover,.fakebutton:hover{border-color:var(--gold)}.primary{background:#e68431;color:#15100a;border-color:#ffa85b;font-weight:700}button:disabled{opacity:.4;cursor:not-allowed}.canvasWrap{padding:10px;position:relative}#network{display:block;width:100%;height:650px;border-radius:12px;background:radial-gradient(ellipse 65% 40% at 50% 50%,#1d202e 0%,#0a0d13 86%);cursor:crosshair}#hoverHint{position:absolute;left:24px;bottom:21px;font-size:11px;color:#93a1b5;pointer-events:none}.metrics{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #29303c}.metric{padding:13px 15px;border-right:1px solid #252c38}.metric:last-child{border-right:0}.metric strong{display:block;font-size:17px;font-weight:700}.metric span{display:block;font-size:11px;color:var(--muted)}aside{display:flex;flex-direction:column;gap:14px}.panel{padding:16px}.panel h3{margin:0 0 13px;font-size:14px}.panel p{color:var(--muted);font-size:12px;margin:8px 0}label{display:block;color:#b9c5d6;font-size:12px;margin:12px 0 6px}input[type=range]{width:100%;accent-color:var(--gold)}.status{color:#ecbd91;background:#2a2019;border:1px solid #4e3626;border-radius:9px;padding:10px;font-size:12px;overflow-wrap:anywhere}.status.ok{background:#172a24;color:#97ecd0;border-color:#2c5c4c}.status.bad{background:#391e23;color:#ffc4cb;border-color:#75434b}.row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;border-bottom:1px solid #2b303d}.row:last-child{border-bottom:0}.muted{color:var(--muted)}.output{height:12px;border-radius:999px;background:#292e39;overflow:hidden;margin:5px 0 12px}.fill{height:100%;width:0%;background:linear-gradient(90deg,#bf5d28,#ffab48);transition:width .35s}.fill.blue{background:linear-gradient(90deg,#386bc5,#6abcfb)}.warn{border-left:3px solid var(--gold);padding-left:10px}.legend{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:11px 18px;color:#b6c0d0;border-top:1px solid #28303b;font-size:11px}.swatch{display:inline-block;width:18px;height:3px;background:var(--gold);margin-left:8px}.swatch.neg{background:var(--blue)}.swatch.gray{background:#68758c}.footer{color:#8e9caf;font-size:11px;line-height:1.6;padding:18px 22px 28px;max-width:1580px;margin:auto}code{color:#ffc18c}input[type=file]{display:none}kbd{padding:2px 4px;border:1px solid #464e5e;border-radius:4px;background:#20242f}#nodeDetail{min-height:76px;white-space:pre-wrap;word-break:break-word}#note{color:#cfd8e5}.chip{font-size:10px;background:#252b37;padding:4px 7px;border:1px solid #36404f;border-radius:5px}#dataName{overflow-wrap:anywhere}
+@media(max-width:950px){main{grid-template-columns:1fr}aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#network{height:540px}}@media(max-width:600px){main{padding:10px}header{padding:18px 12px}.metrics{grid-template-columns:repeat(2,1fr)}aside{grid-template-columns:1fr}#network{height:480px}.bar{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/pabloinaciosilvestreinacio-collab/mecatiger-hub/main/public/Screenshot_20261004_131612_Instagram.jpg" alt="Meca Tiger" width="35" height="35" style="object-fit:cover;border-radius:8px" onerror="this.remove();this.parentNode.textContent='✦'"></div><div><h1>MECA <span style="color:var(--gold)">NEURAL VIEWER</span></h1><p>Meca Intelligence · inspeção de rede neural local e experimental</p></div></div><div class="tools"><a class="fakebutton primary" href="#laboratorio" style="text-decoration:none">Treinar IA · 900 cenários ↓</a><span class="pill">200 → 20 → 10 → 2 · Edge Impulse + treino web</span></div></header>
+<main>
+<section class="mainSection">
+ <div class="bar"><div><h2>Mapa dos neurônios</h2><small id="networkState">Prévia da arquitetura · sem pesos carregados</small></div><div class="tools"><label class="fakebutton" for="modelFile" style="margin:0">📂 Abrir ZIP / C++<input id="modelFile" type="file" accept=".zip,.cpp,.h"></label><label class="fakebutton" for="csvFile" style="margin:0">📈 Abrir CSV<input id="csvFile" type="file" accept=".csv,text/csv"></label><button id="saveBtn">↧ Salvar imagem</button></div></div>
+ <div class="canvasWrap"><canvas id="network"></canvas><div id="hoverHint">Passe o mouse sobre um neurônio para inspecionar. Clique para fixar.</div></div>
+ <div class="legend"><span class="swatch"></span> Pesos positivos <span class="swatch neg"></span> Pesos negativos <span class="swatch gray"></span> Arquitetura ilustrativa (antes de importar) · <span class="chip">Selecione um neurônio</span></div>
+ <div class="metrics"><div class="metric"><strong id="cntLayers">4</strong><span>Camadas</span></div><div class="metric"><strong id="cntNeurons">232</strong><span>Neurônios</span></div><div class="metric"><strong id="cntEdges">4.220</strong><span>Conexões</span></div><div class="metric"><strong id="modelStatus">Não carregado</strong><span>Pesos do modelo</span></div></div>
+</section>
+<aside>
+ <div class="panel"><h3>01 · Modelo treinado</h3><div class="status" id="status">Carregue o ZIP que você exportou no Edge Impulse. Os arquivos ficam no seu navegador; nada é enviado a servidores.</div><div class="row"><span class="muted">Formato</span><span id="fmt">—</span></div><div class="row"><span class="muted">Classes</span><span>IMU travada / Normal</span></div><div class="row"><span class="muted">Ativação</span><span>ReLU → ReLU → Softmax</span></div><p>Abre diretamente o ZIP com C++ compilado ou o arquivo <code>tflite_learn_*_compiled.cpp</code> extraído dele.</p></div>
+ <div class="panel"><h3>02 · Opções visuais</h3><label for="density">Mostrar conexões mais fortes <span id="densityVal" style="float:right">70%</span></label><input id="density" type="range" min="1" max="100" value="70"><label for="brightness">Intensidade das conexões <span id="brightVal" style="float:right">55%</span></label><input id="brightness" type="range" min="5" max="100" value="55"><label style="display:flex;align-items:center;gap:8px"><input id="showAll" type="checkbox" checked> Mostrar todos os neurônios de entrada</label><button id="resetSelect">Limpar seleção</button></div>
+ <div class="panel"><h3>03 · Inferência de exemplo</h3><p id="dataName">Importe um CSV de 40 linhas, 20 Hz, com as colunas imu_yaw_deg, encoder_md_ticks, encoder_me_ticks, potencia_md e potencia_me.</p><div class="row"><span>IMU travada</span><strong id="probStuck">—</strong></div><div class="output"><div class="fill" id="barStuck"></div></div><div class="row"><span>Normal</span><strong id="probNormal">—</strong></div><div class="output"><div class="fill blue" id="barNormal"></div></div><p class="warn">Inferência local aproximada da rede INT8, não verificação bit a bit do motor TensorFlow Lite. Não usar para decisões críticas do robô.</p></div>
+ <div class="panel"><h3>04 · Inspeção do neurônio</h3><div id="nodeDetail" class="muted">Clique em uma bolinha para mostrar sua camada, ativação e conexões com pesos reais.</div></div>
+</aside>
+<section class="labSection" id="laboratorio">
+ <div class="bar"><div><h2>Laboratório de treinamento · Meca Intelligence</h2><small>Gera conjuntos sintéticos, treina uma MLP no navegador e avalia dados reservados. Não treina o modelo INT8 importado.</small></div><span class="chip">Sem servidor · Sem chave de API</span></div>
+ <div class="labBody">
+  <div class="labCard"><h3>01 · Gerar cenários</h3>
+   <p>900 exemplos sintéticos a 20 Hz, com curvas, reversões, ruído, movimento reto, paradas e congelamentos da IMU.</p>
+   <button class="primary" id="generateBtn">Gerar 900 cenários</button><button id="exportDataBtn">Exportar ZIP CSV</button>
+   <div class="row"><span>Treino</span><strong id="count_training">0</strong></div><div class="row"><span>Validação</span><strong id="count_validation">0</strong></div><div class="row"><span>Teste reservado</span><strong id="count_testing">0</strong></div>
+   <p id="labBaseline" class="muted">Ainda não gerado</p>
+  </div>
+  <div class="labCard"><h3>02 · Treinar MLP própria</h3>
+   <p>Treinamento supervisionado local (200 → 20 → 10 → 2) com retropropagação e Adam. Não altera o pacote Edge Impulse.</p>
+   <label for="epochs">Épocas <input type="number" min="1" max="120" value="24" id="epochs"></label>
+   <button class="primary" id="trainBtn">Treinar no navegador</button><button id="exportModelBtn">Salvar modelo JSON</button>
+   <button id="loadWebModel">Abrir modelo JSON</button><input type="file" id="webModelFile" accept=".json,application/json" hidden>
+   <progress id="labProgress" max="100" value="0"></progress>
+   <p id="labMetrics">Rede ainda não treinada.</p>
+  </div>
+  <div class="labCard"><h3>03 · Verificar generalização</h3>
+   <p>Validação durante o treino; conjunto de teste separado e não utilizado na otimização dos pesos.</p>
+   <button class="primary" id="testBtn">Avaliar teste independente</button>
+   <button id="labSampleBtn">Visualizar exemplo na rede</button>
+   <div id="labTest" class="muted">Nenhum teste executado ainda.</div>
+   <p id="labSampleInfo" class="muted">Abra um cenário para observar suas ativações e conexões.</p>
+  </div>
+  <div class="full"><div class="status" id="labStatus">Comece clicando em Gerar 900 cenários. Os testes são inteiramente sintéticos, não representam hardware real.</div></div>
+ </div>
+</section>
+</main>
+<div class="footer">Meca Intelligence Browser Lab. Dois modelos independentes: exportação Edge Impulse INT8 (visualização/inferência aproximada) e MLP treinada no navegador (retropropagação real). Este visualizador não é a página original NN-Visualizer. O modelo e seus pesos não estão embutidos neste arquivo; são lidos somente do arquivo selecionado. O SDK do Edge Impulse contém condições de licença específicas: confirme que sua assinatura permite o uso e não publique arquivos de modelo sem verificar os termos. Dados sintéticos não validam falhas no Mequinha real.</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const canvas=$('#network'),ctx=canvas.getContext('2d');
+const sizes=[200,20,10,2],labels=['Entradas (200)','Densa 1 (20)','Densa 2 (10)','Saídas (2)'];
+let model=null, activations=null, inputValues=null, selected=null, hover=null, points=[],dims={w:0,h:0}, csvName='';
+const keys=['imu_yaw_deg','encoder_md_ticks','encoder_me_ticks','potencia_md','potencia_me'];
+function state(str,ok=false,bad=false){const s=$('#status');s.textContent=str;s.className='status'+(ok?' ok':bad?' bad':'');}
+function arraysFromSource(src){
+ const a={};
+ const re=/(?:int8_t|int32_t)\s+tensor_data(\d+)\s*\[[^\]]+\]\s*=\s*\{([\s\S]*?)\}/g;
+ for(let m;(m=re.exec(src));){a[m[1]]=m[2].match(/-?\d+/g)?.map(Number)||[];}
+ const scale={};for(const m of src.matchAll(/quant(\d+)_scale\s*=\s*\{\s*1\s*,\s*\{\s*([\d.eE+-]+)/g))scale[m[1]]=Number(m[2]);
+ const zero={};for(const m of src.matchAll(/quant(\d+)_zero\s*=\s*\{\s*1\s*,\s*\{\s*(-?\d+)/g))zero[m[1]]=Number(m[2]);
+ if(!a[2]||a[2].length!==20||!a[4]||a[4].length!==200||!a[6]||a[6].length!==4000||!a[1]||a[1].length!==2||!a[3]||a[3].length!==10||!a[5]||a[5].length!==20)
+   throw Error('Não encontrei a topologia esperada (200-20-10-2) com tensores compilados. Confira se é o ZIP C++ do modelo correto.');
+ for(const k of ['0','1','2','3','4','5','6','7','8','9','10'])if(!(k in scale))throw Error('Escala de quantização ausente: '+k);
+ const W=[[a[6],scale[6],20,200],[a[4],scale[4],10,20],[a[2],scale[2],2,10]].map(([nums,s,rows,cols])=>Array.from({length:rows},(_,j)=>nums.slice(j*cols,(j+1)*cols).map(v=>v*s)));
+ const B=[[a[5],scale[5]],[a[3],scale[3]],[a[1],scale[1]]].map(([nums,s])=>nums.map(v=>v*s));
+ return {W,B,scale,zero,signature:'Compilado INT8'};
+}
+function getInt8(x,scale,z){return Math.max(-128,Math.min(127,Math.round(x/scale+z)));}
+function forward(x){if(!model)throw Error('Carregue o modelo primeiro');if(model.kind==='browser')return forwardBrowser(x);const {W,B,scale,zero}=model;
+ const a0=x.map(v=>(getInt8(v,scale[0],zero[0]||0)-(zero[0]||0))*scale[0]);
+ let prev=a0,acts=[a0];
+ for(let l=0;l<3;l++){
+  const outScale=scale[7+l],outZero=zero[7+l] ?? -128;
+  const next=W[l].map((weights,j)=>{
+   let v=B[l][j]; for(let i=0;i<prev.length;i++)v+=weights[i]*prev[i];
+   if(l<2)v=Math.max(0,v);
+   return (getInt8(v,outScale,outZero)-outZero)*outScale;
+  });acts.push(next);prev=next;
+ }
+ const max=Math.max(...prev),exp=prev.map(v=>Math.exp(v-max)),total=exp.reduce((s,v)=>s+v,0);acts[3]=exp.map(v=>v/total);return acts;
+}
+async function readZipCpp(buf){const bytes=new Uint8Array(buf),dv=new DataView(buf);
+ let end=-1;for(let i=bytes.length-22;i>=Math.max(0,bytes.length-66000);i--){if(dv.getUint32(i,true)===0x06054b50){end=i;break;}}
+ if(end<0)throw Error('ZIP inválido: fim do diretório não encontrado');
+ const off=dv.getUint32(end+16,true),count=dv.getUint16(end+10,true);let at=off;
+ for(let i=0;i<count;i++){
+  if(dv.getUint32(at,true)!==0x02014b50)throw Error('ZIP inválido: índice de arquivos');
+  const method=dv.getUint16(at+10,true),size=dv.getUint32(at+20,true),flen=dv.getUint16(at+28,true),elen=dv.getUint16(at+30,true),clen=dv.getUint16(at+32,true),local=dv.getUint32(at+42,true),name=new TextDecoder().decode(bytes.slice(at+46,at+46+flen));
+  if(/tflite-model\/tflite_learn_.*_compiled\.cpp$/.test(name)){
+   const begin=local+30+dv.getUint16(local+26,true)+dv.getUint16(local+28,true);const block=bytes.slice(begin,begin+size);
+   if(method===0)return new TextDecoder().decode(block);
+   if(method!==8)throw Error('O ZIP usa método de compressão não suportado');
+   if(typeof DecompressionStream==='undefined')throw Error('Seu navegador não suporta extração ZIP. Extraia o ZIP e selecione o .cpp.');
+   try{const stream=new Blob([block]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return await new Response(stream).text();}catch(e){throw Error('Não foi possível abrir o ZIP no navegador. Extraia o arquivo e selecione tflite-model/tflite_learn_*_compiled.cpp.');}
+  }
+  at+=46+flen+elen+clen;
+ }
+ throw Error('O ZIP não contém o arquivo tflite_learn_*_compiled.cpp');
+}
+$('#modelFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  state('Lendo arquivo local…');const src=f.name.toLowerCase().endsWith('.zip')?await readZipCpp(await f.arrayBuffer()):await f.text();
+  model=arraysFromSource(src);inputValues=null;activations=null;selected=null;
+  $('#networkState').textContent='Pesos reais do arquivo '+f.name;$('#fmt').textContent='C++ INT8';$('#modelStatus').textContent='Carregados';state('✓ Modelo INT8 carregado localmente: 200 → 20 → 10 → 2, com 4.220 pesos. Abra um CSV para observar ativações.',true);draw();
+ }catch(err){state(err.message,false,true);model=null;activations=null;$('#modelStatus').textContent='Erro';draw();}
+});
+function parseCSV(str){const lines=str.trim().split(/\r?\n/).filter(x=>x.trim());const headers=lines.shift().replace(/^\ufeff/,'').split(',').map(s=>s.trim().toLowerCase());
+ const inds=keys.map(k=>headers.indexOf(k));if(inds.some(i=>i<0))throw Error('CSV não contém todas as 5 colunas esperadas: '+keys.join(', '));
+ if(lines.length!==40)throw Error('Esperadas 40 leituras (2 s, 20 Hz), recebidas '+lines.length+'.');
+ const vals=[];for(const line of lines){const cols=line.split(',');for(const i of inds){const v=Number(cols[i]);if(!Number.isFinite(v)||!cols[i]?.trim())throw Error('Valor inválido no CSV');vals.push(v);}}
+ return vals;
+}
+$('#csvFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ if(!model){state('Primeiro carregue o ZIP do modelo.',false,true);return;}
+ try{inputValues=parseCSV(await f.text());activations=forward(inputValues);csvName=f.name;$('#dataName').textContent='Exemplo carregado: '+f.name;updateOutputs();selected={l:3,i:activations[3][0]>=activations[3][1]?0:1};updateDetail();draw();}
+ catch(err){state(err.message,false,true);}
+});
+function updateOutputs(){if(!activations)return;const vals=activations[3];$('#probStuck').textContent=(vals[0]*100).toFixed(1)+'%';$('#probNormal').textContent=(vals[1]*100).toFixed(1)+'%';$('#barStuck').style.width=(vals[0]*100)+'%';$('#barNormal').style.width=(vals[1]*100)+'%';}
+function maxW(l){if(!model)return 1;let max=0;for(const row of model.W[l])for(const v of row)max=Math.max(max,Math.abs(v));return max||1;}
+function positions(){const w=dims.w,h=dims.h;return sizes.map((len,l)=>Array.from({length:len},(_,i)=>{
+ const xl=[Math.max(35,w*.063),w*.37,w*.64,w-68][l];
+ const min=55,max=h-54,space=(max-min)/(len===200?len:Math.max(1,len-1));
+ const y=len===200?min+(i+.5)*space:len===1?(min+max)/2:min+i*space;
+ return {x:xl,y,r:l===0?(len===200?2.1:4):l===3?11:5.4,l,i};
+ }));}
+function resize(){const box=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);dims={w:box.width,h:box.height};canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);points=positions();draw();}
+function draw(){if(!dims.w)return;const w=dims.w,h=dims.h;ctx.clearRect(0,0,w,h);ctx.save();
+ ctx.strokeStyle='rgba(159,170,195,.085)';ctx.setLineDash([2,6]);for(let l=0;l<4;l++){const x=points[l][0].x;ctx.beginPath();ctx.moveTo(x,26);ctx.lineTo(x,h-24);ctx.stroke();}ctx.setLineDash([]);
+ const density=Number($('#density').value)/100,bri=Number($('#brightness').value)/100;const chosen=selected||hover; const displayInput=$('#showAll').checked;
+ for(let l=0;l<3;l++){
+  const max=maxW(l),ws=model?.W[l];for(let j=0;j<points[l+1].length;j++)for(let i=0;i<points[l].length;i++){
+   if(l===0&&!displayInput&&i%5!==0)continue;
+   const wij=ws?ws[j][i]:Math.sin((i+1)*73.9+(j+1)*37.2+l*9)*0.6;
+   const ratio=Math.abs(wij)/(ws?max:1);
+   if(ws&&ratio<Math.max(.02,(1-density)*.93))continue;
+   const active=chosen&&(chosen.l===l&&chosen.i===i||chosen.l===l+1&&chosen.i===j);
+   if(chosen&&!active&&ws){if(ratio<.74)continue;}
+   const a=points[l][i],b=points[l+1][j];const alpha=ws?(active?.84:Math.max(.01,(ratio**2)*bri*.15)):.03;
+   ctx.strokeStyle=ws?(wij<0?`rgba(81,161,255,${alpha})`:`rgba(255,149,66,${alpha})`):'rgba(115,126,148,.12)';
+   ctx.lineWidth=active?1.6:(ws?.35+ratio*.4:.3);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+ }
+ for(let l=0;l<4;l++){const arr=points[l],as=activations?.[l];
+  let max=1;if(as)max=Math.max(...as.map(Math.abs),1e-9);
+  for(const pt of arr){if(l===0&&!displayInput&&pt.i%5!==0)continue;
+   const isSelected=chosen?.l===l&&chosen.i===pt.i;
+   const v=as?as[pt.i]/max:0;
+   ctx.beginPath();ctx.arc(pt.x,pt.y,isSelected?pt.r+3:pt.r,0,2*Math.PI);
+   const shades=['#559ef5','#db9a60','#a994e5','#68dba6'];
+   ctx.fillStyle=as?(l===3?`rgba(90,214,164,${.32+.68*as[pt.i]})`:`rgba(${l===0?'92,157,240':l===1?'243,154,80':'170,145,245'},${.2+.8*Math.min(1,Math.abs(v))})`):shades[l];
+   ctx.fill();if(isSelected){ctx.strokeStyle='#fff5c7';ctx.lineWidth=1.5;ctx.stroke();}
+  }
+ }
+ ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle='#c5d0e2';labels.forEach((t,i)=>ctx.fillText(t,points[i][0].x,21));
+ ctx.textAlign='right';ctx.font='11px system-ui';ctx.fillStyle='#8c9ab0';ctx.fillText('Meca Intelligence · modelo INT8 · v6',w-13,h-13);
+ if(activations){ctx.fillStyle='#b7d8c5';ctx.textAlign='left';ctx.fillText('CSV: '+csvName.slice(0,35),14,h-13);}
+ ctx.restore();}
+function updateDetail(){const c=selected||hover;if(!c){$('#nodeDetail').textContent='Clique em um neurônio para inspecioná-lo.';return;}
+ const val=activations?.[c.l]?.[c.i];let lines=[labels[c.l]+' · neurônio '+(c.i+1),val===undefined?'Ativação: carregue um CSV':'Ativação: '+val.toFixed(c.l===3?5:3)];
+ if(model&&c.l>0){const row=model.W[c.l-1][c.i];const ord=row.map((w,i)=>({i,w})).sort((a,b)=>Math.abs(b.w)-Math.abs(a.w)).slice(0,5);lines.push('Bias: '+model.B[c.l-1][c.i].toFixed(5));lines.push('5 conexões de maior |peso|:');for(const q of ord)lines.push('  '+(q.i+1)+' → '+(c.i+1)+' : '+q.w.toFixed(5));}
+ $('#nodeDetail').textContent=lines.join('\n');}
+function pick(x,y){let best=null,dist=20;for(const layer of points)for(const p of layer){if(p.l===0&&!$('#showAll').checked&&p.i%5!==0)continue;const d=Math.hypot(x-p.x,y-p.y);if(d<dist){dist=d;best={l:p.l,i:p.i};}}return best;}
+canvas.addEventListener('mousemove',e=>{if(selected)return;const b=canvas.getBoundingClientRect();const p=pick(e.clientX-b.left,e.clientY-b.top);if(JSON.stringify(p)!==JSON.stringify(hover)){hover=p;updateDetail();draw();}});
+canvas.addEventListener('mouseleave',()=>{if(!selected){hover=null;updateDetail();draw();}});
+canvas.addEventListener('click',e=>{const b=canvas.getBoundingClientRect();selected=pick(e.clientX-b.left,e.clientY-b.top);hover=null;updateDetail();draw();});
+$('#resetSelect').addEventListener('click',()=>{selected=null;hover=null;updateDetail();draw();});
+for(const id of ['density','brightness','showAll']){$('#'+id).addEventListener('input',()=>{$('#densityVal').textContent=$('#density').value+'%';$('#brightVal').textContent=$('#brightness').value+'%';draw();});}
+$('#saveBtn').addEventListener('click',()=>{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='meca-intelligence-neuronios.png';a.click();});
+window.addEventListener('resize',resize);resize();
+</script>
+<script src="src/core.js"></script><script src="src/lab.js"></script>
+</body></html>
