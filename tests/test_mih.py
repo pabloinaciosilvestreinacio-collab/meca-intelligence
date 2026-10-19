@@ -76,6 +76,16 @@ class DiagnosticTests(unittest.TestCase):
         self.assertIn("imu_yaw_deg",result["missing_channels"])
         self.assertNotIn("IMU_NO_ANGULAR_PROGRESS",[v["code"] for v in result["issues"]])
 
+    def test_stall_starting_late(self):
+        rows=self.movement(me=lambda i: i*30 if i<=5 else 150)
+        issues=diagnose(run(rows))["issues"]
+        self.assertIn("NO_ENCODER_PROGRESS_ME",[v["code"] for v in issues])
+
+    def test_late_imu_freeze(self):
+        rows=self.movement(yaw=lambda i: i*4 if i<=5 else 20)
+        issues=diagnose(run(rows))["issues"]
+        self.assertIn("IMU_NO_ANGULAR_PROGRESS",[v["code"] for v in issues])
+
     def test_timeout_and_gap(self):
         rows=[{"time_ms":0},{"time_ms":50},{"time_ms":1000}]
         codes=[v["code"] for v in diagnose(run(rows,termination_reason="timeout"))["issues"]]
