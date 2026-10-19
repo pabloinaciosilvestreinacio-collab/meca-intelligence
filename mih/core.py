@@ -245,7 +245,10 @@ def diagnose(run):
 
     if len(s) > 2:
         gaps = [s[i]["time_ms"] - s[i - 1]["time_ms"] for i in range(1, len(s))]
-        dt = median(gaps)
+        # Referência robusta: mediana da metade inferior dos intervalos.
+        # Mesmo duas diferenças permitem apontar salto muito maior que o intervalo menor.
+        baseline_gaps = sorted(gaps)[:max(1, (len(gaps) + 1) // 2)]
+        dt = median(baseline_gaps)
         jumps = [round(v, 2) for v in gaps if v > max(250, 3 * dt)]
         if jumps:
             add("SAMPLING_GAP", "Intervalo irregular na captura; diagnósticos podem perder eventos.",
@@ -271,7 +274,7 @@ def diagnose(run):
                     "Potência significativa sem variação do encoder; investigar ligação, encoder, carga e motor.",
                     {"from_ms": s[start]["time_ms"], "to_ms": s[end]["time_ms"],
                      "encoder_delta_ticks": s[end][encoder] - s[start][encoder]})
-            break
+            # Continue: falhas podem começar somente depois de um período normal.
 
     # A IMU travada só pode ser suspeitada se o robô foi comandado a girar,
     # ambos encoders tiveram progresso e a leitura angular permaneceu quase fixa.
@@ -300,7 +303,7 @@ def diagnose(run):
                 {"from_ms": s[start]["time_ms"], "to_ms": s[end]["time_ms"],
                  "imu_delta_deg": round(yaw_change, 3),
                  "encoder_me_delta": le, "encoder_md_delta": ri})
-        break
+        # Continue a varredura para detectar congelamento tardio da IMU.
 
     if all(any(v.get(k) is not None for v in s) for k in (
            "motor_me_command", "motor_md_command", "encoder_me_ticks", "encoder_md_ticks")):
