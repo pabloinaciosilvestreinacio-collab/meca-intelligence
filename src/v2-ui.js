@@ -183,9 +183,10 @@ function render(){
   const before=shown[l],after=shown[l+1];const max=Math.max(...model.W[l].flat().map(Math.abs),1e-9);
   for(const b of after)for(const a of before){
    const weight=model.W[l][b.i][a.i],magnitude=Math.abs(weight)/max;
-   if(magnitude<threshold||displayed>=totalCap)continue;
    const selected=chosen&&(chosen.l===l&&chosen.i===a.i||chosen.l===l+1&&chosen.i===b.i);
    if(chosen&&!selected)continue;
+   // On a selected node always show its actual incident edges, regardless of density filter.
+   if((!chosen&&magnitude<threshold)||displayed>=totalCap)continue;
    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
    ctx.strokeStyle=weight<0?(style.scheme==='mono'?'rgba(154,164,179,':'rgba(139,171,218,')+Math.min(.85,opa*magnitude)+')':'rgba(255,151,65,'+Math.min(.9,opa*magnitude)+')';
    ctx.lineWidth=(selected?2.2:.35+.75*magnitude)*style.width;ctx.stroke();displayed++;if(weight<0)negative++;else positive++;
@@ -214,6 +215,13 @@ cnv.addEventListener('pointerup',e=>{
  drag=null;
 });
 $('#v2ResetView').addEventListener('click',()=>{zoom=1;panX=panY=0;chosen=null;render();});
+$('#v2ResetStyle').addEventListener('click',()=>{
+ $('#v2Radius').value='3';$('#v2Density').value='60';$('#v2Opacity').value='45';
+ $('#v2LineWidth').value='1';$('#v2MinMagnitude').value='0';
+ $('#v2ColorScheme').value='orange-blue';$('#v2ShowLabels').checked=true;
+ try{localStorage.removeItem('meca-v2-visual-v1');}catch{}
+ captureVisualPrefs();
+});
 function captureVisualPrefs(){
  style.r=Number($('#v2Radius').value);style.density=Number($('#v2Density').value);
  style.opacity=Number($('#v2Opacity').value);style.width=Number($('#v2LineWidth').value);
