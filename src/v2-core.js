@@ -197,6 +197,11 @@ function importTelemetry(content,name='',origin){
   let data;try{data=JSON.parse(content);}catch{throw Error('JSON inválido.');}
   if(data?.schema_version==='MIH-V1'&&Array.isArray(data.samples)){
    if(data.source!==origin)throw Error('A origem informada difere do arquivo.');
+   const required=['run_id','timestamp','robot_config_id','code_version','experiment_id'];
+   for(const key of required)if(typeof data[key]!=='string'||!data[key].trim())
+    throw Error('MIH-V1: metadado obrigatório ausente: '+key);
+   if(!/^(\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2}))$/.test(data.timestamp)||!Number.isFinite(Date.parse(data.timestamp)))
+    throw Error('MIH-V1: timestamp ISO 8601 com timezone obrigatório.');
    const s=data.samples,normalized=[];
    for(let i=0;i<s.length;i++){
     const row=s[i];if(!row||typeof row!=='object')throw Error('Amostra JSON inválida.');
@@ -220,7 +225,9 @@ function importTelemetry(content,name='',origin){
   rows=lines.map((ln,i)=>{
    const columns=ln.split(',');if(columns.length!==head.length)throw Error('Linha '+(i+2)+' com colunas incorretas.');
    const get=k=>{const index=at(k);return index<0||columns[index].trim()===''?null:Number(columns[index]);};
-   return [get(time)*(sim?1000:1),get(sim?'unsupported_imu': 'imu_yaw_deg'),
+   const stamp=get(time);
+   if(stamp===null||!Number.isFinite(stamp))throw Error('Tempo ausente/inválido na linha '+(i+2));
+   return [stamp*(sim?1000:1),get(sim?'unsupported_imu': 'imu_yaw_deg'),
     get(sim?'MD_ticks':'encoder_md_ticks'),get(sim?'ME_ticks':'encoder_me_ticks'),
     get(lab?'potencia_md':'motor_md_command'),get(lab?'potencia_me':'motor_me_command')];
   });
