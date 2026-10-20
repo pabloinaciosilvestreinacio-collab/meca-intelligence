@@ -58,6 +58,16 @@ test('download and reload V2 JSON model without altering predictions',async()=>{
  const original=await page.evaluate(()=>{
   const v=window.MecaV2; const ds=v.samples(30,3);return v.forward(v.init({hidden:[32,16]},32578),v.sampleRaw(ds.testing[0])).at(-1);
  });
+ const [reportDownload]=await Promise.all([
+  page.waitForEvent('download'),page.locator('#v2Report').click(),
+ ]);
+ const report=JSON.parse(fs.readFileSync(await reportDownload.path(),'utf8'));
+ assert.equal(report.schema,'MIH-V2-EXPERIMENT-v1');
+ assert.deepEqual(report.architecture.shape,[200,32,16,2]);
+ assert.equal(report.dataset.baselineOnValidation.matrix.length,2);
+ assert.equal(report.evaluation.total,15);
+ assert.equal(report.imported_file,null);
+ assert.match(report.limits.join(' '),/Mequinha físico/);
  const [download]=await Promise.all([
   page.waitForEvent('download'),page.locator('#v2Save').click(),
  ]);
