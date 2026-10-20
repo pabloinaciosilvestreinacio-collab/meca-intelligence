@@ -86,7 +86,7 @@ test('download and reload V2 JSON model without altering predictions',async()=>{
  assert.notDeepEqual(pred.a,await page.evaluate(m=>window.MecaV2.forward(m,window.MecaV2.sampleRaw(window.MecaV2.samples(30,3).testing[0])).at(-1),empty));
 });
 test('telemetry importer parses valid JSON, rejects missing sensor and shows preview',async()=>{
- const data={schema_version:'MIH-V1',source:'real',samples:Array.from({length:40},(_,i)=>({
+ const data={schema_version:'MIH-V1',source:'real',run_id:'real-001',timestamp:'2026-10-19T20:00:00-03:00',robot_config_id:'bench',code_version:'test',experiment_id:'test-e2e',samples:Array.from({length:40},(_,i)=>({
   time_ms:i*50,imu_yaw_deg:i*.1,encoder_md_ticks:i*15,encoder_me_ticks:i*14,
   motor_md_command:.4,motor_me_command:.4
  }))};
