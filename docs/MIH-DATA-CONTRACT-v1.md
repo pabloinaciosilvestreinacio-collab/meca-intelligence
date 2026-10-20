@@ -61,3 +61,7 @@ Anomalias representam **sintomas**: IMU sem avanço angular durante giro comanda
 ## Evolução
 
 Alterações incompatíveis criarão `MIH-V2` e migrador explícito. Preservar JSON bruto, SHA256 e identificação da execução no banco SQLite local.
+
+## Treinamento supervisionado — metadata estendida
+
+`session_id` é opcional na importação comum, mas **obrigatório para elegibilidade no treinamento**. Deve identificar sessão/coleta independente; janelas do mesmo ensaio não podem ser divididas entre treino e teste. Conjuntos com sinais duplicados são descartados da avaliação. Para treinamento físico, `label_provenance=verified_measurement` requer revisão humana real das evidências; o software apenas verifica a declaração, não autentica sua veracidade. Classes aceitas para a tarefa binária: `normal` e categorias conhecidas de anomalias. Um modelo não treinado por falta de dados é uma decisão correta, não uma falha do sistema.

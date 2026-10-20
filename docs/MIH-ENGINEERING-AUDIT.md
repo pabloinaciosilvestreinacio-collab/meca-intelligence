@@ -45,3 +45,7 @@ Licenças dos pacotes, versões de modelos externos e datasets comparáveis: **n
 Capturar sessões distintas com `time_ms`, potências, encoders, IMU, tensão, montagem e versão imutável do código. Protocolar `ensaio`, `falha observada`, `resultado rotulado por avaliador` e condições; testar 3–5 repetições sob condições controladas. Revisar thresholds usando **sessões** independentes. Só então reavaliar classificadores e aprendizado.
 
 **Decisão M.E.C.A.:** continuar com diagnósticos determinísticos e coleta estruturada; suspender promessas de validação neural física.
+
+## Continuação condicional da Etapa 2
+
+Implementado protocolo de prontidão do aprendizado (`mih/ml.py`). Exige rótulos controlados, amplitude dos sinais, execuções independentes, `session_id` e classes suficientes. Quando o critério é atendido, compara modelo majoritário, regressão logística e Random Forest com divisão por sessão; dependência scikit-learn opcional. **Nenhum modelo foi considerado treinado ou validado fisicamente nesta auditoria.** Regressões com amostras artificiais testam apenas a implementação das regras de prontidão.

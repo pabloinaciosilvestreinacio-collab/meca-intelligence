@@ -115,3 +115,15 @@ Documentação: [contrato de dados MIH-V1](docs/MIH-DATA-CONTRACT-v1.md) · [aud
 - Etapa 4: adaptador de gravações Meca Sim no importador; testes de bancada e coleta automática ainda pendentes.
 
 **Atenção:** não versione CSVs reais sem revisar privacidade e consentimento. Limiares são didáticos e não certificados.
+
+### Avaliação supervisionada segura (opcional)
+
+O subcomando `ml-check` exige identificador de sessão (`--session-id` na importação), rótulos revisados, sinais suficientes, ao menos 12 execuções por classe e sessões independentes; `real` exige `label_provenance=verified_measurement`. Ele mostra motivos de bloqueio antes de qualquer treino.
+
+```bash
+python -m mih ml-check --domain real
+# Somente após a prontidão, instale opcionalmente: pip install scikit-learn
+python -m mih ml-evaluate --domain real
+```
+
+`ml-evaluate` compara preditor majoritário, regressão logística e Random Forest, com **holdout agrupado por sessão**, métricas por classe e sem salvar pesos automaticamente. Também permite `--domain synthetic_lab`, sempre identificado como experimental; não converta esse resultado em afirmação sobre o Mequinha físico. O laboratório MLP existente no navegador permanece independente.

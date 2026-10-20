@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 
 from .core import ContractError, Registry, compare, diagnose, import_file
+from .ml import readiness, evaluate
 
 
 def _json(data):
@@ -58,6 +59,7 @@ def parser():
     imp.add_argument("--termination", default="unknown", choices=[
         "unknown", "completed", "timeout", "stopped", "error"])
     imp.add_argument("--notes", default="")
+    imp.add_argument("--session-id", help="Sessão independente para split sem vazamento de dados")
     imp.add_argument("--report", type=Path, help="Gravar relatório Markdown em arquivo local")
     run = sub.add_parser("analyze", help="Diagnóstico de um run_id")
     run.add_argument("run_id")
@@ -65,6 +67,9 @@ def parser():
     sub.add_parser("list", help="Listar execuções importadas")
     cp = sub.add_parser("compare", help="Comparar execuções descritivamente")
     cp.add_argument("run_ids", nargs="+")
+    for cmd in ("ml-check", "ml-evaluate"):
+        item = sub.add_parser(cmd, help="Verificar/praticar avaliação supervisionada, separando sessões")
+        item.add_argument("--domain", default="real", choices=["real","simulation","synthetic_lab"])
     return p
 
 
@@ -79,7 +84,8 @@ def main(argv=None):
                     timestamp=args.recorded_at, robot_config_id=args.robot_config,
                     code_version=args.code_version, experiment_id=args.experiment_id,
                     label=args.result_label, label_provenance=args.label_provenance,
-                    termination_reason=args.termination, notes=args.notes)
+                    termination_reason=args.termination, notes=args.notes,
+                    session_id=args.session_id)
                 created = with_db.add(record)
                 report = diagnose(record)
                 output = {"stored":created,"diagnosis":report}
@@ -97,8 +103,14 @@ def main(argv=None):
                     output["report_file"] = str(args.report)
             elif args.command == "list":
                 output = {"runs":with_db.list()}
-            else:
+            elif args.command == "compare":
                 output = compare([with_db.get(i) for i in args.run_ids])
+            else:
+                records=[with_db.get(item["run_id"]) for item in with_db.list()]
+                if args.command=="ml-check":
+                    output=readiness(records,domain=args.domain)
+                else:
+                    output=evaluate(records,domain=args.domain)
         finally:
             with_db.close()
         print(_json(output))

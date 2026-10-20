@@ -154,7 +154,7 @@ def _kind(cols):
 def import_file(path, *, source, run_id, timestamp, robot_config_id,
                 code_version, experiment_id, label=None,
                 label_provenance="unlabeled", termination_reason="unknown",
-                notes=""):
+                notes="", session_id=None):
     """Converte exportações do Meca Sim, laboratório neural e MIH CSV em MIH-V1.
 
     'source' é declarado pelo operador; não há verificação criptográfica de origem.
@@ -207,6 +207,7 @@ def import_file(path, *, source, run_id, timestamp, robot_config_id,
         "code_version": code_version, "experiment_id": experiment_id,
         "result_label": label, "label_provenance": label_provenance,
         "termination_reason": termination_reason, "notes": notes,
+        "session_id": session_id,
         "import_format": kind, "source_sha256": hashlib.sha256(binary).hexdigest(),
         "samples": converted,
     }
