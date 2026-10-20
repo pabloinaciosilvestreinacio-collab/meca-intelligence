@@ -4,7 +4,7 @@
 
 ### Opção 1 — ZIP OFFLINE (funciona com duplo clique)
 
-1. Abra [GitHub Actions — Validar Neural Lab V2](../../actions/workflows/v2.yml) e escolha a execução mais recente com marca verde.
+1. Abra [GitHub Actions — Validar Neural Lab V2](https://github.com/pabloinaciosilvestreinacio-collab/meca-intelligence/actions/workflows/v2.yml) e escolha a execução mais recente com marca verde.
 2. Baixe o artifact **MECA-Neural-Lab-OFFLINE** (contém um ZIP).
 3. Extraia **MECA-Neural-Lab-OFFLINE.zip**; mantenha a pasta \`src\` ao lado de \`index.html\`.
 4. Abra \`MECA-Neural-Lab/index.html\` no **Edge ou Chrome**. O aviso **CPU local offline** confirma que o motor matemático carregou. A criação da rede e o treinamento funcionam nesse modo sem Python e sem servidor.
