@@ -32,6 +32,32 @@ root.MecaOfflineRunner=function(){
     model=V.init(req.options,req.seed);emit('initialized',{model});
    }else if(req.action==='load'){
     model=V.legacy(req.model);emit('initialized',{model});
+   }else if(req.action==='trainConfigured'){
+    // No Web Worker in file:// mode. Same numerical training, no fake outcomes.
+    busy=true;cancel=false;
+    const p=req.config,opts=V.trainingOptions(req.options);
+    const networkConfig=V.config({hidden:p.hidden,activation:p.activation});
+    if(p.count>5000||p.count<20)throw Error('Modo offline: selecione de 20 a 5.000 amostras; para 10.000 use servidor HTTP.');
+    const started=performance.now();
+    emit('preparing',{message:'Gerando '+p.count+' amostras e inicializando '+networkConfig.shape.join(' → ')+' na CPU offline.'});
+    const pendingData=V.samples(p.count,p.seed,p.split);
+    const candidate=V.init({hidden:p.hidden,activation:p.activation},p.seed);
+    const generationMs=Math.round(performance.now()-started);
+    if(cancel)emit('cancelled',{epochsCompleted:0});
+    else{
+     const trainingStarted=performance.now();
+     const trained=await V.train(candidate,pendingData,{...opts,
+      onEpoch:stat=>emit('epoch',{stat,elapsedMs:Math.round(performance.now()-trainingStarted)}),
+      shouldStop:()=>cancel,yieldTick:tick});
+     if(trained.cancelled)emit('cancelled',{epochsCompleted:trained.epochsCompleted});
+     else{
+      data=pendingData;model=trained.model;
+      emit('trained',{model,history:trained.history,trainingMs:Math.round(performance.now()-trainingStarted),
+       environment:'browser-cpu-offline-fallback',generationMs,
+       counts:Object.fromEntries(['training','validation','testing'].map(k=>[k,data[k].length])),
+       metadata:data.metadata,baselineOnValidation:core.evaluateBaseline(data.validation)});
+     }
+    }
    }else if(req.action==='train'){
     if(!data||!model)throw Error('Gere dados e inicialize a arquitetura antes do treino.');
     cancel=false;busy=true;
