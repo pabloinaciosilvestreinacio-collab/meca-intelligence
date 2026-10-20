@@ -11,8 +11,8 @@ const workerSupported=!!window.Worker;
 let worker=null,model=null,dataReady=false,busy=false,counters={},history=[],lastSample=null,net=null;
 const cnv=$('#v2Canvas'),ctx=cnv.getContext('2d'),style={r:3,density:60,opacity:45,width:1,minMagnitude:0,scheme:'orange-blue',showLabels:true};
 let shown=[],chosen=null,zoom=1,panX=0,panY=0,drag=null,drawing=null,imported=null;
-const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample']){
- const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&(!dataReady||!model))||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Save'&&!model);
+const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample','v2Compare']){
+ const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&(!dataReady||!model))||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Compare'&&!dataReady)||(id==='v2Save'&&!model);
 }$('#v2Cancel').disabled=!busy;};
 function newWorker(){
  if(!workerSupported){status('Web Worker indisponível neste navegador; não há processamento simulado.',true);return;}
@@ -73,6 +73,9 @@ function receive({data:e}){
   setBusy(false);lastSample=e.acts;$('#v2SampleInfo').textContent=e.sampleId+' · '+e.scenario+' · rótulo '+e.label+' · predição '+V.LABELS[e.acts.at(-1)[0]>=e.acts.at(-1)[1]?0:1];render();
   break;
  case 'benchmarkProgress':$('#v2Bench').textContent+='\\n'+JSON.stringify(e.result);break;
+ case 'compared':
+  setBusy(false);$('#v2Comparison').textContent=JSON.stringify({results:e.results,warning:e.warning,source:e.source},null,2);
+  status('Comparação executada com o mesmo dataset reservado; modelos não alterados.');break;
  case 'benchmarked':setBusy(false);$('#v2Bench').textContent=JSON.stringify(e.results,null,2);status('Benchmarks CPU concluídos no Worker deste navegador.');break;
  case 'cancelled':setBusy(false);status('Treinamento cancelado após '+e.epochsCompleted+' épocas; modelo anterior preservado.');break;
  case 'cancelling':status('Cancelamento solicitado. Processamento será interrompido no próximo checkpoint.');break;
@@ -139,6 +142,18 @@ $('#v2InferFile').addEventListener('click',()=>{
    ' · PREDIÇÃO EXPERIMENTAL, NÃO DIAGNÓSTICO CONFIRMADO.';
   render();
  }catch(err){status(err.message,true);}
+});
+$('#v2Compare').addEventListener('click',async()=>{
+ try{
+  const files=Array.from($('#v2CompareFiles').files||[]);
+  if(files.length!==2)throw Error('Selecione exatamente dois arquivos de modelos.');
+  const models=[];
+  for(const f of files){
+   if(f.size>8e6)throw Error('Arquivo de modelo excede 8 MB.');
+   models.push(V.legacy(JSON.parse(await f.text())));
+  }
+  run('compare',{models});
+ }catch(e){setBusy(false);status(e.message,true);}
 });
 $('#v2Benchmark').addEventListener('click',()=>{
  if(!confirm('Benchmark CPU de 1000, 5000 e 10000 amostras, 1 época por lote. Poderá consumir memória e CPU. Executar?'))return;
