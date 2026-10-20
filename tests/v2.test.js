@@ -59,13 +59,16 @@ test('invalid dimensions, labels and values rejected',()=>{
 });
 test('MIH-V1 file validates channels and does not synthesize IMU readings',()=>{
  const good={
-  schema_version:'MIH-V1',source:'real',samples:Array.from({length:40},(_,i)=>({
+  schema_version:'MIH-V1',source:'real',run_id:'real-001',timestamp:'2026-10-19T20:00:00-03:00',robot_config_id:'bench',code_version:'test',experiment_id:'test-e2e',samples:Array.from({length:40},(_,i)=>({
    time_ms:i*50,imu_yaw_deg:i,encoder_md_ticks:i*10,encoder_me_ticks:i*10,
    motor_md_command:.4,motor_me_command:.4
   }))
  };
  const imp=V.importTelemetry(JSON.stringify(good),'telemetry.json','real');
  assert.equal(imp.compatible,true);assert.equal(imp.raw.length,200);
+ const invalid=JSON.parse(JSON.stringify(good));delete invalid.run_id;
+ assert.throws(()=>V.importTelemetry(JSON.stringify(invalid),'telemetry.json','real'),/metadado/);
+ assert.throws(()=>V.importTelemetry('time_ms,imu_yaw_deg\n,10\n50,20','invalid.csv','real'),/Tempo ausente/);
  const missing=JSON.parse(JSON.stringify(good));delete missing.samples[2].imu_yaw_deg;
  assert.equal(V.importTelemetry(JSON.stringify(missing),'telemetry.json','real').compatible,false);
  assert.throws(()=>V.importTelemetry(JSON.stringify(good),'telemetry.json','simulation'),/origem/);
