@@ -46,13 +46,13 @@ function receive({data:e}){
  switch(e.event){
  case 'error':setBusy(false);status(e.message,true);break;
  case 'generated':
-  dataReady=true;setBusy(false);counters=e.counts;history=[];lastEvaluation=null;
-  datasetInfo={...e.metadata,counts:e.counts,baseline:e.baseline,generationMs:e.generationMs,estimate:e.estimate};$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
+  dataReady=true;setBusy(false);counters=e.counts;history=[];lastEvaluation=null;trainingMs=null;
+  datasetInfo={...e.metadata,counts:e.counts,baselineOnValidation:e.baselineOnValidation,generationMs:e.generationMs,estimate:e.estimate};$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
   $('#v2DatasetMeta').textContent='Seed '+e.metadata.seed+' · '+fmt(e.metadata.count)+' cenários sintéticos · gerados em '+tms(e.generationMs)+'.';
   status('Dados sintéticos gerados. Treinamento e teste continuam separados. Nenhuma coleta física foi executada.');
   break;
  case 'initialized':
-  model=e.model;setBusy(false);history=model.trained?.history||[];lastSample=null;lastEvaluation=null;chosen=null;renderMetrics();render();
+  model=e.model;setBusy(false);history=model.trained?.history||[];lastSample=null;lastEvaluation=null;trainingMs=null;chosen=null;renderMetrics();render();
   status('Arquitetura inicializada: '+model.shape.join(' → ')+'. Pesos são matematicamente reais, mas ainda não comprovam aprendizado.');
   break;
  case 'epoch':
