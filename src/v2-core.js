@@ -6,7 +6,7 @@
  root.MecaV2=api;
 })(typeof self!=='undefined'?self:globalThis,function(root){
 'use strict';
-const LABELS=['imu_travada','normal'],INPUT=200,MAX_PARAMS=100000;
+const LABELS=['imu_travada','normal'],INPUT=200,MAX_PARAMS=60000;
 function random(seed=32578){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t^=t+Math.imul(t^(t>>>7),61|t);return((t^(t>>>14))>>>0)/4294967296;};}
 function normal(r){return Math.sqrt(-2*Math.log(Math.max(1e-10,r())))*Math.cos(2*Math.PI*r());}
 function parameters(shape){return shape.slice(1).reduce((sum,n,i)=>sum+n*(shape[i]+1),0);}
@@ -15,7 +15,7 @@ function config(input={}){
  if(!Array.isArray(hidden)||hidden.length<1||hidden.length>4||hidden.some(n=>!Number.isInteger(n)||n<2||n>128))throw Error('Use 1 a 4 camadas ocultas com 2 a 128 neurônios cada.');
  if(!['relu','tanh'].includes(activation))throw Error('Ativação inválida: use relu ou tanh.');
  const shape=[INPUT,...hidden,2];
- if(parameters(shape)>MAX_PARAMS)throw Error('Arquitetura excede 100.000 parâmetros; reduza as camadas.');
+ if(parameters(shape)>MAX_PARAMS)throw Error('Arquitetura excede 60.000 parâmetros; reduza as camadas.');
  return {shape,activation,labels:LABELS.slice(),parameters:parameters(shape),inputFormat:'40x5-delta-v1'};
 }
 function validateModel(m){
