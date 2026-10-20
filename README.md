@@ -160,3 +160,9 @@ Os benchmarks CPU 1k/5k/10k e o teste Chromium/Playwright estão nos jobs de [Gi
 [Arquitetura, fontes, limitações, contrato e evidências V2](docs/MIH-NEURAL-LAB-V2.md)
 
 **Importante:** nem cenários sintéticos nem um CSV sem procedência autenticada confirmam o desempenho neural no Mequinha real.
+
+## Verificações e evidências da V2
+
+[Consultar matriz de aceitação, benchmarks medidos, capturas Chromium e riscos](docs/MIH-V2-VALIDATION.md).
+
+A validação física segue pendente; a V2 não controla motores e não adiciona GPUs ou VMs fictícias.
