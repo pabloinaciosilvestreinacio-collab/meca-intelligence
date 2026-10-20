@@ -93,7 +93,7 @@ function receive({data:e}){
   $('#v2TrainMeta').textContent='Época '+e.stat.epoch+' · val. accuracy '+(e.stat.validation.accuracy*100).toFixed(1)+'% · loss '+e.stat.validation.loss.toFixed(4)+' · '+tms(e.elapsedMs);
   break;
  case 'trained':
-  model=e.model;setBusy(false);history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
+  model=e.model;history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
   if(e.counts&&e.metadata){
    dataReady=true;counters=e.counts;
    datasetInfo={...e.metadata,counts:e.counts,baselineOnValidation:e.baselineOnValidation,
@@ -101,6 +101,7 @@ function receive({data:e}){
    $('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
    $('#v2DatasetMeta').textContent='Seed '+e.metadata.seed+' · '+fmt(e.metadata.count)+' cenários sintéticos gerados e usados no treinamento.';
   }
+  setBusy(false); // Refresh controls only after dataReady/model are updated.
   $('#v2Progress').value=100;renderMetrics();render();
   status('Treinamento real concluído em '+tms(e.trainingMs)+' no modo '+(executionMode==='offline-cpu'?'CPU offline':'Web Worker CPU')+'. Métricas sintéticas não validam o robô físico.');
   break;
