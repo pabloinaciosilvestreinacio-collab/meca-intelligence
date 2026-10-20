@@ -63,6 +63,19 @@ test('download and reload V2 JSON model without altering predictions',async()=>{
  ]);
  const filename=await download.path();const json=JSON.parse(fs.readFileSync(filename,'utf8'));
  assert.deepEqual(json.shape,[200,32,16,2]);assert.ok(json.trained);
+ await page.once('dialog',dialog=>dialog.accept());
+ await page.locator('#v2ModelFile').setInputFiles({
+  name:'saved-v2.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(json))});
+ await page.waitForFunction(()=>document.querySelector('#v2ModelType')?.textContent.includes('Treinado'));
+ assert.match(await page.locator('#v2Architecture').innerText(),/200 → 32 → 16 → 2/);
+ const alternative=await page.evaluate(()=>window.MecaV2.init({hidden:[20,10]},7));
+ await page.locator('#v2CompareFiles').setInputFiles([
+  {name:'A.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(json))},
+  {name:'B.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(alternative))}
+ ]);
+ await page.locator('#v2Compare').click();
+ await page.waitForFunction(()=>document.querySelector('#v2Comparison')?.textContent.includes('"results"'));
+ assert.match(await page.locator('#v2Comparison').innerText(),/accuracy/);
  const pred=await page.evaluate(model=>{
   const V=window.MecaV2,ds=V.samples(30,3),x=V.sampleRaw(ds.testing[0]);
   const a=V.forward(model,x).at(-1),b=V.forward(V.legacy(JSON.parse(JSON.stringify(model))),x).at(-1);
