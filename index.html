@@ -11,6 +11,27 @@
 header{padding:22px 28px 18px;border-bottom:1px solid #252b37;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}header h1{margin:0;font-size:21px;letter-spacing:.04em}header p{margin:4px 0 0;color:var(--muted);font-size:12px}.logo{width:38px;height:38px;display:grid;place-items:center;border:1px solid #a75924;border-radius:11px;color:var(--gold);font-size:22px}.brand{display:flex;align-items:center;gap:13px}.pill{font-size:11px;color:#eac8a4;border:1px solid #80532f;padding:6px 12px;border-radius:30px}
 main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:15px}section,.panel{background:linear-gradient(160deg,#171b25,#10131a);border:1px solid #2b313d;border-radius:14px;overflow:hidden}.mainSection{min-width:0}.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #29303c}.bar h2{margin:0;font-size:15px}.bar small,.hint{color:var(--muted);font-size:11px}.tools{display:flex;gap:8px;flex-wrap:wrap}button,.fakebutton{background:#2a303b;color:#e9edf4;border:1px solid #465061;border-radius:8px;padding:9px 12px;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:5px}button:hover,.fakebutton:hover{border-color:var(--gold)}.primary{background:#e68431;color:#15100a;border-color:#ffa85b;font-weight:700}button:disabled{opacity:.4;cursor:not-allowed}.canvasWrap{padding:10px;position:relative}#network{display:block;width:100%;height:650px;border-radius:12px;background:radial-gradient(ellipse 65% 40% at 50% 50%,#1d202e 0%,#0a0d13 86%);cursor:crosshair}#hoverHint{position:absolute;left:24px;bottom:21px;font-size:11px;color:#93a1b5;pointer-events:none}.metrics{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #29303c}.metric{padding:13px 15px;border-right:1px solid #252c38}.metric:last-child{border-right:0}.metric strong{display:block;font-size:17px;font-weight:700}.metric span{display:block;font-size:11px;color:var(--muted)}aside{display:flex;flex-direction:column;gap:14px}.panel{padding:16px}.panel h3{margin:0 0 13px;font-size:14px}.panel p{color:var(--muted);font-size:12px;margin:8px 0}label{display:block;color:#b9c5d6;font-size:12px;margin:12px 0 6px}input[type=range]{width:100%;accent-color:var(--gold)}.status{color:#ecbd91;background:#2a2019;border:1px solid #4e3626;border-radius:9px;padding:10px;font-size:12px;overflow-wrap:anywhere}.status.ok{background:#172a24;color:#97ecd0;border-color:#2c5c4c}.status.bad{background:#391e23;color:#ffc4cb;border-color:#75434b}.row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;border-bottom:1px solid #2b303d}.row:last-child{border-bottom:0}.muted{color:var(--muted)}.output{height:12px;border-radius:999px;background:#292e39;overflow:hidden;margin:5px 0 12px}.fill{height:100%;width:0%;background:linear-gradient(90deg,#bf5d28,#ffab48);transition:width .35s}.fill.blue{background:linear-gradient(90deg,#386bc5,#6abcfb)}.warn{border-left:3px solid var(--gold);padding-left:10px}.legend{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:11px 18px;color:#b6c0d0;border-top:1px solid #28303b;font-size:11px}.swatch{display:inline-block;width:18px;height:3px;background:var(--gold);margin-left:8px}.swatch.neg{background:var(--blue)}.swatch.gray{background:#68758c}.footer{color:#8e9caf;font-size:11px;line-height:1.6;padding:18px 22px 28px;max-width:1580px;margin:auto}code{color:#ffc18c}input[type=file]{display:none}kbd{padding:2px 4px;border:1px solid #464e5e;border-radius:4px;background:#20242f}#nodeDetail{min-height:76px;white-space:pre-wrap;word-break:break-word}#note{color:#cfd8e5}.chip{font-size:10px;background:#252b37;padding:4px 7px;border:1px solid #36404f;border-radius:5px}#dataName{overflow-wrap:anywhere}
 @media(max-width:950px){main{grid-template-columns:1fr}aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#network{height:540px}}@media(max-width:600px){main{padding:10px}header{padding:18px 12px}.metrics{grid-template-columns:repeat(2,1fr)}aside{grid-template-columns:1fr}#network{height:480px}.bar{padding:12px}}
+/* V2 independent workbench — Meca Tiger graphite + orange */
+#neuralV2{grid-column:1/-1;background:#11151d;border:1px solid #573b27}
+.v2Hero{padding:18px 20px;border-bottom:1px solid #58412d;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.v2Hero h2{margin:0;font-size:21px;color:#ffac68}.v2Hero p{margin:4px 0 0;color:#bdc6d3}
+.v2Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:15px}
+.v2Card{background:#191e28;border:1px solid #343b49;border-radius:12px;padding:15px;min-width:0}
+.v2Card h3{font-size:15px;color:#ffc391;margin:0 0 12px}
+.v2Card input,.v2Card select{background:#0f141b;color:#f4f5fa;border:1px solid #586174;border-radius:7px;padding:8px;width:100%;max-width:100%}
+.v2Card input[type=range]{padding:0}.v2Card input[type=file]{display:block;border:0;padding:6px 0}
+.v2Card label{display:block;margin:9px 0;font-size:12px}.v2Card .half{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.v2Card button{margin:4px 4px 4px 0}.v2Card p,.v2Card pre{font-size:12px;line-height:1.55;color:#c0c9d7}
+.v2Wide{grid-column:1/-1}.v2Double{grid-column:span 2}
+.v2Status{border:1px solid #876036;border-radius:8px;background:#291e15;color:#ffe1bf;padding:12px;margin:0 15px 15px;font-size:12px}
+.v2Status.bad{border-color:#934d53;color:#ffd0d0;background:#351d21}
+#v2Canvas{width:100%;height:580px;display:block;border-radius:11px;background:#0b0e15;touch-action:none;cursor:crosshair}
+#v2Neuron,#v2Results,#v2ImportResult,#v2Bench{max-height:220px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,monospace}
+#v2GraphStats,#v2Estimate{font-size:12px;color:#d1d7e0;margin:8px 0}
+#v2Guide details{padding:9px;border-bottom:1px solid #38404e}#v2Guide summary{cursor:pointer;color:#ffc391}
+#v2Progress{display:block;width:100%;accent-color:#ff9d3e}
+@media(max-width:1100px){.v2Grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v2Wide{grid-column:1/-1}}
+@media(max-width:650px){.v2Grid{grid-template-columns:minmax(0,1fr);padding:9px}.v2Double{grid-column:1/-1}#v2Canvas{height:460px}}
 </style>
 </head>
 <body>
@@ -54,6 +75,82 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
   </div>
   <div class="full"><div class="status" id="labStatus">Comece clicando em Gerar 900 cenários. Os testes são inteiramente sintéticos, não representam hardware real.</div></div>
  </div>
+</section>
+
+<section id="neuralV2" aria-label="Laboratório Neural V2">
+ <div class="v2Hero"><div><h2>MECA NEURAL LAB <span style="color:#fff">V2</span></h2>
+ <p>Arquiteturas reais configuráveis · treinamento local · inspeção de pesos · engenharia reproduzível</p></div>
+ <span class="pill">EXPERIMENTAL · Dados físicos não validados</span></div>
+ <div class="v2Grid">
+ <div class="v2Card"><h3>01 · Arquitetura neuronal</h3>
+  <label for="v2Preset">Preset
+   <select id="v2Preset"><option value="20,10">200 → 20 → 10 → 2</option><option value="32,16">200 → 32 → 16 → 2</option><option value="64,32,16">200 → 64 → 32 → 16 → 2</option><option value="128,64,32">200 → 128 → 64 → 32 → 2</option></select></label>
+  <label for="v2Hidden">Neurônios ocultos (separados por vírgula)
+   <input id="v2Hidden" value="20,10" autocomplete="off"></label>
+  <label for="v2Activation">Ativação das camadas ocultas
+   <select id="v2Activation"><option value="relu">ReLU</option><option value="tanh">Tanh</option></select></label>
+  <button id="v2Init" class="primary">Inicializar pesos e arquitetura</button>
+  <p id="v2Architecture">Modelo não inicializado</p><p id="v2ModelType">Sem pesos.</p>
+ </div>
+ <div class="v2Card"><h3>02 · Dados sintéticos</h3>
+  <label for="v2Count">Quantidade de amostras
+   <select id="v2Count"><option value="100">100</option><option value="500">500</option><option value="1000" selected>1.000</option><option value="5000">5.000</option><option value="10000">10.000</option></select></label>
+  <label for="v2Seed">Seed do gerador<input id="v2Seed" type="number" value="32578" step="1"></label>
+  <div class="half"><label for="v2SplitTrain">Treino %<input id="v2SplitTrain" type="number" min="1" max="98" value="70"></label>
+   <label for="v2SplitVal">Validação %<input id="v2SplitVal" type="number" min="1" max="98" value="15"></label></div>
+  <label for="v2SplitTest">Teste reservado %<input id="v2SplitTest" type="number" min="1" max="98" value="15"></label>
+  <p id="v2Estimate">Estimativa pendente.</p>
+  <button id="v2Generate" class="primary">Gerar dataset de verdade</button>
+  <p id="v2Counts">Nenhum dataset.</p><p id="v2DatasetMeta"></p>
+ </div>
+ <div class="v2Card"><h3>03 · Treinamento configurável</h3>
+  <div class="half"><label for="v2Epochs">Épocas<input id="v2Epochs" type="number" min="1" max="120" value="6"></label>
+  <label for="v2Batch">Batch size<input id="v2Batch" type="number" min="1" max="256" value="24"></label></div>
+  <div class="half"><label for="v2Lr">Learning rate<input id="v2Lr" type="number" min="0.00001" max="0.5" step="0.0001" value="0.003"></label>
+  <label for="v2Patience">Early stopping patience (0 = off)<input id="v2Patience" type="number" min="0" max="40" value="0"></label></div>
+  <label for="v2Optimizer">Otimizador<select id="v2Optimizer"><option value="adam">Adam</option><option value="sgd">SGD</option></select></label>
+  <button id="v2Train" class="primary">Treinar rede configurada</button><button id="v2Cancel" disabled>Cancelar</button>
+  <progress id="v2Progress" max="100" value="0"></progress><p id="v2TrainMeta">Não iniciado.</p>
+ </div>
+ <div class="v2Card v2Wide"><h3>04 · Mapa de neurônios e conexões reais</h3>
+  <canvas id="v2Canvas" aria-label="Rede neural e ligações baseadas nas matrizes de pesos efetivas"></canvas>
+  <p id="v2GraphStats">Inicialize um modelo para exibir seu grafo.</p>
+  <div class="half"><label for="v2Radius">Raio dos neurônios<input id="v2Radius" type="range" min="2" max="8" value="3"></label>
+   <label for="v2Density">Densidade de conexões exibidas<input id="v2Density" type="range" min="5" max="100" value="60"></label></div>
+  <label for="v2Opacity">Opacidade dos pesos<input id="v2Opacity" type="range" min="5" max="100" value="45"></label>
+  <button id="v2ResetView">Redefinir zoom, posição e seleção</button>
+  <p>Use a roda do mouse para zoom, arraste para deslocar e clique em um neurônio para inspecionar. Laranja = peso positivo; azul = peso negativo. O limite de renderização prioriza desempenho sem inventar pesos.</p>
+  <pre id="v2Neuron">Clique em um neurônio para inspecionar pesos, bias e ativação.</pre>
+ </div>
+ <div class="v2Card"><h3>05 · Teste reservado e ativações</h3>
+  <button class="primary" id="v2Test">Avaliar conjunto de teste</button>
+  <div class="half"><label for="v2SampleIndex">Índice de exemplo<input id="v2SampleIndex" type="number" min="0" value="0"></label><div><label>Amostra</label><button id="v2Sample">Visualizar ativações</button></div></div>
+  <pre id="v2Results">Sem avaliação.</pre><p id="v2SampleInfo">Nenhuma amostra selecionada.</p>
+ </div>
+ <div class="v2Card"><h3>06 · Modelos e resultados</h3>
+  <button id="v2Save">Exportar JSON do modelo</button><button id="v2LoadBtn">Abrir modelo legado / V2</button>
+  <input id="v2ModelFile" type="file" accept=".json,application/json" hidden>
+  <button id="v2History">Exportar histórico real</button>
+  <p>Exportações incluem a topologia, pesos, bias, treino e seed. O laboratório legado e o modelo Edge Impulse permanecem independentes.</p>
+ </div>
+ <div class="v2Card"><h3>07 · Processamento e benchmarks</h3>
+  <p id="v2Environment">Detectando CPU Worker...</p>
+  <p>GPU/WebGPU, Python remoto e VM não estão habilitados sem implementação e comprovação de execução.</p>
+  <button id="v2Benchmark">Benchmark real 1k / 5k / 10k</button>
+  <pre id="v2Bench">Nenhum benchmark executado neste navegador.</pre>
+ </div>
+ <div class="v2Card v2Double"><h3>08 · Importar dados do Mequinha / Meca Sim</h3>
+  <p>Processamento somente no navegador. O formato precisa conter 40 leituras temporais a 20 Hz e os cinco canais de entrada; valores ausentes nunca são fabricados.</p>
+  <label for="v2Origin">Origem declarada
+   <select id="v2Origin"><option value="real">Mequinha físico (declarado, não autenticado)</option><option value="simulation">Meca Sim — simulação</option><option value="synthetic_lab">Laboratório sintético</option></select></label>
+  <label for="v2ImportFile">Arquivo MIH-V1 JSON ou CSV<input type="file" id="v2ImportFile" accept=".csv,.json"></label>
+  <pre id="v2ImportResult">Nenhum arquivo analisado.</pre>
+  <button id="v2InferFile" disabled>Inferência experimental no modelo carregado</button>
+  <p id="v2ImportPrediction">Sem inferência.</p>
+ </div>
+ <div class="v2Card"><h3>09 · Tutorial interativo</h3><div id="v2Guide" aria-label="Oito aulas práticas de redes neurais"></div></div>
+ </div>
+ <div class="v2Status" id="v2Status" role="status">Aguardando inicialização.</div>
 </section>
 </main>
 <div class="footer">Meca Intelligence Browser Lab. Dois modelos independentes: exportação Edge Impulse INT8 (visualização/inferência aproximada) e MLP treinada no navegador (retropropagação real). Este visualizador não é a página original NN-Visualizer. O modelo e seus pesos não estão embutidos neste arquivo; são lidos somente do arquivo selecionado. O SDK do Edge Impulse contém condições de licença específicas: confirme que sua assinatura permite o uso e não publique arquivos de modelo sem verificar os termos. Dados sintéticos não validam falhas no Mequinha real.</div>
@@ -185,4 +282,5 @@ $('#saveBtn').addEventListener('click',()=>{const a=document.createElement('a');
 window.addEventListener('resize',resize);resize();
 </script>
 <script src="src/core.js"></script><script src="src/lab.js"></script>
+<script src="src/v2-core.js"></script><script src="src/v2-ui.js"></script>
 </body></html>
