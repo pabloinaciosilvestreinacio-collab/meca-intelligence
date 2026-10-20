@@ -18,6 +18,32 @@ onmessage=async ({data:req})=>{
    model=MecaV2.init(req.options,req.seed);send('initialized',{model});
   }else if(req.action==='load'){
    model=MecaV2.legacy(req.model);send('initialized',{model});
+  }else if(req.action==='trainConfigured'){
+   // Atomic one-click workflow: generate, initialize, train. Old model/data survive cancellation.
+   busy=true;cancelRequested=false;
+   const cfg=req.config,opts=MecaV2.trainingOptions(req.options);
+   const networkConfig=MecaV2.config({hidden:cfg.hidden,activation:cfg.activation});
+   if(cfg.count>10000||cfg.count<20)throw Error('Para treino CPU Worker use entre 20 e 10.000 amostras.');
+   const started=performance.now();
+   send('preparing',{message:'Gerando '+cfg.count+' amostras e inicializando '+networkConfig.shape.join(' → ')+' na CPU.'});
+   const pendingData=MecaV2.samples(cfg.count,cfg.seed,cfg.split);
+   const candidate=MecaV2.init({hidden:cfg.hidden,activation:cfg.activation},cfg.seed);
+   const generationMs=Math.round(performance.now()-started);
+   if(cancelRequested){send('cancelled',{epochsCompleted:0});}
+   else{
+    const trainStarted=performance.now();
+    const trained=await MecaV2.train(candidate,pendingData,{...opts,
+     onEpoch:stat=>send('epoch',{stat,elapsedMs:Math.round(performance.now()-trainStarted)}),
+     shouldStop:()=>cancelRequested});
+    if(trained.cancelled)send('cancelled',{epochsCompleted:trained.epochsCompleted});
+    else{
+     data=pendingData;model=trained.model;
+     send('trained',{model,history:trained.history,trainingMs:Math.round(performance.now()-trainStarted),
+      environment:'browser-cpu-worker',generationMs,
+      counts:Object.fromEntries(['training','validation','testing'].map(k=>[k,data[k].length])),
+      metadata:data.metadata,baselineOnValidation:MecaCore.evaluateBaseline(data.validation)});
+    }
+   }
   }else if(req.action==='train'){
    if(!data)throw Error('Gere dados antes do treinamento.');
    if(!model)throw Error('Inicialize uma arquitetura primeiro.');
