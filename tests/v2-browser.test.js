@@ -139,3 +139,26 @@ test('real mobile viewport remains usable, and no false GPU/VM state',async()=>{
  await mp.screenshot({path:'v2-mobile.png',fullPage:true});
  await mobile.close();
 });
+
+test('file:// double click equivalent: offline math engine loads and actually trains',async()=>{
+ const offline=await ctx.newPage(),errors=[];
+ offline.on('pageerror',error=>errors.push(error.message));
+ try{
+  await offline.goto('file://'+path.join(root,'index.html'),{waitUntil:'load'});
+  await offline.waitForFunction(()=>document.querySelector('#v2Environment')?.textContent.includes('CPU local offline'));
+  assert.match(await offline.locator('#v2Status').innerText(),/Modo local detectado/);
+  await offline.selectOption('#v2Preset','32,16');
+  await offline.locator('#v2Init').click();
+  await offline.waitForFunction(()=>document.querySelector('#v2Architecture')?.textContent.includes('200 → 32 → 16 → 2'));
+  await offline.selectOption('#v2Count','100');
+  await offline.locator('#v2Epochs').fill('1');
+  await offline.locator('#v2Generate').click();
+  await offline.waitForFunction(()=>document.querySelector('#v2Counts')?.textContent.includes('training: 70'));
+  await offline.locator('#v2Train').click();
+  await offline.waitForFunction(()=>document.querySelector('#v2ModelType')?.textContent.includes('Treinado'),null,{timeout:45000});
+  assert.match(await offline.locator('#v2Status').innerText(),/CPU offline/);
+  await offline.locator('#v2Test').click();
+  await offline.waitForFunction(()=>document.querySelector('#v2Results')?.textContent.includes('accuracy'));
+  assert.deepEqual(errors,[]);
+ }finally{await offline.close();}
+});

@@ -1,7 +1,7 @@
 name: Validar Neural Lab V2
 on:
   push:
-    branches: [feat/neural-lab-v2]
+    branches: [main, feat/neural-lab-v2, 'fix/**']
   pull_request:
 jobs:
   math:
@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --test tests/core.test.js tests/v2.test.js
-      - run: node --check src/v2-core.js && node --check src/v2-worker.js && node --check src/v2-ui.js
+      - run: node --check src/v2-core.js && node --check src/v2-worker.js && node --check src/v2-ui.js && node --check src/v2-offline.js
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -43,3 +43,26 @@ jobs:
         with:
           name: mih-v2-benchmarks
           path: v2-benchmarks.json
+  offline-package:
+    needs: [math, browser]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create ready-to-open offline ZIP
+        run: |
+          mkdir -p build/MECA-Neural-Lab/src
+          cp index.html build/MECA-Neural-Lab/index.html
+          cp src/*.js build/MECA-Neural-Lab/src/
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          root = Path('build')
+          with zipfile.ZipFile('MECA-Neural-Lab-OFFLINE.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for f in (root/'MECA-Neural-Lab').rglob('*'):
+                  if f.is_file(): z.write(f, f.relative_to(root))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MECA-Neural-Lab-OFFLINE
+          path: MECA-Neural-Lab-OFFLINE.zip
+          if-no-files-found: error

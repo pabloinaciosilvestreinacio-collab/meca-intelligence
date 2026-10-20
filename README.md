@@ -1,3 +1,30 @@
+## Abrir o laboratório (sem instalar nada)
+
+**Atenção: o código no GitHub não é automaticamente um site publicado.** Enquanto GitHub Pages não estiver habilitado, um endereço \`github.io\` pode retornar 404.
+
+### Opção 1 — ZIP OFFLINE (funciona com duplo clique)
+
+1. Abra [GitHub Actions — Validar Neural Lab V2](https://github.com/pabloinaciosilvestreinacio-collab/meca-intelligence/actions/workflows/v2.yml) e escolha a execução mais recente com marca verde.
+2. Baixe o artifact **MECA-Neural-Lab-OFFLINE** (contém um ZIP).
+3. Extraia **MECA-Neural-Lab-OFFLINE.zip**; mantenha a pasta \`src\` ao lado de \`index.html\`.
+4. Abra \`MECA-Neural-Lab/index.html\` no **Edge ou Chrome**. O aviso **CPU local offline** confirma que o motor matemático carregou. A criação da rede e o treinamento funcionam nesse modo sem Python e sem servidor.
+5. Teste 100 amostras, \`32,16\`, uma época, Adam. Depois aumente a carga se estiver estável.
+
+O modo offline executa realmente na CPU da página e limita a geração a 5.000 amostras. O modo HTTP/HTTPS usa Web Worker, permitindo o benchmark de 10.000. Os arquivos \`src/core.js\`, \`src/lab.js\`, \`src/v2-core.js\`, \`src/v2-offline.js\`, \`src/v2-ui.js\` e \`src/v2-worker.js\` devem permanecer disponíveis. Não tente abrir o arquivo \`index.html\` diretamente na visualização de código do GitHub: isso não executa o laboratório.
+
+### Opção 2 — Publicar site gratuito no GitHub Pages
+
+Se o repositório ainda não tiver Pages ativo, **somente quem tem acesso às Settings do repositório** pode habilitar pela interface do GitHub:
+
+1. Abra **Settings → Pages** no repositório.
+2. Em **Build and deployment → Source**, selecione **Deploy from a branch**.
+3. Escolha **main**, pasta **/(root)** e clique **Save**.
+4. Aguarde a conclusão da publicação antes de acessar o endereço exibido em Settings → Pages. O site só está publicado quando o GitHub confirmar esse endereço.
+
+Não é preciso comprar domínio. Evite publicar telemetria física privada: os arquivos importados no navegador ficam locais.
+
+---
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/pabloinaciosilvestreinacio-collab/mecatiger-hub/main/public/Screenshot_20261004_131612_Instagram.jpg" alt="Meca Tiger" width="100" />
   <h1>MECA INTELLIGENCE · Neural Lab</h1>
