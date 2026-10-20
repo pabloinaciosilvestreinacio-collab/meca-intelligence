@@ -10,8 +10,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/*.test.js
-      - run: node --check src/core.js && node --check src/lab.js
+      - run: node --test tests/core.test.js tests/v2.test.js
+      - run: node --check src/core.js && node --check src/lab.js && node --check src/v2-core.js && node --check src/v2-ui.js && node --check src/v2-worker.js
   mih-python:
     runs-on: ubuntu-latest
     steps:

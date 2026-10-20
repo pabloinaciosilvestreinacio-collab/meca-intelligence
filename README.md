@@ -127,3 +127,42 @@ python -m mih ml-evaluate --domain real
 ```
 
 `ml-evaluate` compara preditor majoritário, regressão logística e Random Forest, com **holdout agrupado por sessão**, métricas por classe e sem salvar pesos automaticamente. Também permite `--domain synthetic_lab`, sempre identificado como experimental; não converta esse resultado em afirmação sobre o Mequinha físico. O laboratório MLP existente no navegador permanece independente.
+
+
+---
+
+# Neural Lab V2 — laboratório configurável (experimental)
+
+A V2 é uma **nova área** na mesma aplicação, abaixo do laboratório legado. A rede existente, a importação Edge Impulse e o MIH-V1 Python foram preservados.
+
+A V2 usa um **Web Worker CPU**; para funcionar, abra com servidor HTTP local (não use duplo clique \`file://\`):
+
+\`\`\`bash
+python -m http.server 8000
+\`\`\`
+
+Abra \`http://localhost:8000\` e localize o painel **MECA NEURAL LAB V2**.
+
+1. Escolha camadas ocultas (\`20,10\`, \`32,16\`, \`64,32,16\` ou \`128,64,32\`) e inicialize os pesos.
+2. Defina até 10.000 exemplos sintéticos, seed e divisão de treino/validação/teste e gere os dados.
+3. Configure épocas, batch size, taxa de aprendizado, Adam/SGD e parada antecipada; treine no Worker.
+4. Use o mapa de pesos para zoom, inspeção de bias e ativações. Avalie o conjunto reservado, exporte JSON e histórico.
+5. Importe telemetria MIH-V1, CSV ou exportação do Meca Sim. O modelo só aceita inferência se possuir 40 amostras e todos os cinco canais requeridos.
+6. Use o tutorial de oito aulas e consulte o módulo de processamento. GPU e VM remota **não** são recursos disponíveis.
+
+\`\`\`bash
+node --test tests/core.test.js tests/v2.test.js
+python -m unittest discover -s tests -p 'test_*.py'
+\`\`\`
+
+Os benchmarks CPU 1k/5k/10k e o teste Chromium/Playwright estão nos jobs de [GitHub Actions](https://github.com/pabloinaciosilvestreinacio-collab/meca-intelligence/actions). Confira suas execuções efetivamente aprovadas; um teste unitário, sozinho, não valida a interface.
+
+[Arquitetura, fontes, limitações, contrato e evidências V2](docs/MIH-NEURAL-LAB-V2.md)
+
+**Importante:** nem cenários sintéticos nem um CSV sem procedência autenticada confirmam o desempenho neural no Mequinha real.
+
+## Verificações e evidências da V2
+
+[Consultar matriz de aceitação, benchmarks medidos, capturas Chromium e riscos](docs/MIH-V2-VALIDATION.md).
+
+A validação física segue pendente; a V2 não controla motores e não adiciona GPUs ou VMs fictícias.
