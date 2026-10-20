@@ -36,6 +36,17 @@ onmessage=async ({data:req})=>{
    const index=Math.max(0,Math.min(data.testing.length-1,Math.floor(req.index||0)));
    const sample=data.testing[index],acts=MecaV2.forward(model,MecaV2.sampleRaw(sample));
    send('sample',{index,label:sample.label,scenario:sample.scenario,sampleId:sample.sampleId,acts});
+  }else if(req.action==='compare'){
+   if(!data)throw Error('Gere o dataset reservado antes de comparar modelos.');
+   if(!Array.isArray(req.models)||req.models.length!==2)throw Error('Selecione dois modelos JSON válidos.');
+   busy=true;const out=req.models.map((incoming,index)=>{
+    const candidate=MecaV2.legacy(incoming);
+    return {index:index+1,shape:candidate.shape,parameters:MecaV2.parameters(candidate.shape),
+      origin:candidate.origin,trained:candidate.trained!==null,
+      metrics:MecaV2.evaluate(candidate,data.testing)};
+   });
+   send('compared',{results:out,source:data.metadata,
+    warning:'Comparação no mesmo teste sintético reservado; não comprova generalização física.'});
   }else if(req.action==='benchmark'){
    if(busy)throw Error('Processamento ocupado.');
    busy=true;const results=[];const sizes=[1000,5000,10000];
