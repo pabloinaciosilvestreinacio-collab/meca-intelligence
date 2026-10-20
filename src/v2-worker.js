@@ -13,7 +13,7 @@ onmessage=async ({data:req})=>{
    if(cfg.count>10000)throw Error('Mais de 10.000 amostras aguardam benchmark local. Selecione lote menor.');
    data=MecaV2.samples(cfg.count,cfg.seed,cfg.split);
    send('generated',{counts:Object.fromEntries(['training','validation','testing'].map(k=>[k,data[k].length])),
-    metadata:data.metadata,estimate,baseline:MecaCore.evaluateBaseline(data.testing),generationMs:Math.round(performance.now()-started)});
+    metadata:data.metadata,estimate,baselineOnValidation:MecaCore.evaluateBaseline(data.validation),generationMs:Math.round(performance.now()-started)});
   }else if(req.action==='initialize'){
    model=MecaV2.init(req.options,req.seed);send('initialized',{model});
   }else if(req.action==='load'){
