@@ -55,6 +55,12 @@ class DiagnosticTests(unittest.TestCase):
                  "encoder_md_ticks":md(i),"imu_yaw_deg":yaw(i)}
                 for i in range(15)]
 
+    def test_diagnostics_recommends_experiments_without_execution(self):
+        report=diagnose(run(self.movement(me=lambda i:0)))
+        self.assertTrue(report["proposed_experiments"])
+        self.assertTrue(all(x["status"]=="proposal_not_executed"
+                            for x in report["proposed_experiments"]))
+
     def test_imu_suspected_when_rotation_observable(self):
         issues=diagnose(run(self.movement(yaw=lambda i:0)))["issues"]
         self.assertIn("IMU_NO_ANGULAR_PROGRESS",[v["code"] for v in issues])
