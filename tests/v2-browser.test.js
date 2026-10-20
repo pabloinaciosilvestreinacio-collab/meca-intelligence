@@ -103,6 +103,22 @@ test('telemetry importer parses valid JSON, rejects missing sensor and shows pre
  await page.waitForFunction(()=>document.querySelector('#v2ImportResult')?.textContent.includes('"compatible": false'));
  assert.equal(await page.locator('#v2InferFile').isDisabled(),true);
 });
+test('a real Worker job can be cancelled without exporting a fake result',async()=>{
+ const cancelPage=await ctx.newPage();
+ try{
+  await cancelPage.goto(origin);
+  await cancelPage.locator('#v2Init').click();
+  await cancelPage.waitForFunction(()=>document.querySelector('#v2Architecture')?.textContent.includes('200 → 20 → 10 → 2'));
+  await cancelPage.locator('#v2Generate').click();
+  await cancelPage.waitForFunction(()=>document.querySelector('#v2Counts')?.textContent.includes('training: 700'));
+  await cancelPage.locator('#v2Epochs').fill('40');
+  await cancelPage.locator('#v2Train').click();
+  await cancelPage.waitForFunction(()=>document.querySelector('#v2TrainMeta')?.textContent.includes('Época 1'),null,{timeout:45000});
+  await cancelPage.locator('#v2Cancel').click();
+  await cancelPage.waitForFunction(()=>/cancelado|Cancelamento solicitado/.test(document.querySelector('#v2Status')?.textContent||''),null,{timeout:30000});
+  assert.match(await cancelPage.locator('#v2Status').innerText(),/cancelado|Cancelamento solicitado/);
+ }finally{await cancelPage.close();}
+});
 test('real mobile viewport remains usable, and no false GPU/VM state',async()=>{
  const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  const mp=await mobile.newPage();await mp.goto(origin);
