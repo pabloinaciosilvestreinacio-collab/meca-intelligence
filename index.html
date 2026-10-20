@@ -30,6 +30,10 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
 #v2GraphStats,#v2Estimate{font-size:12px;color:#d1d7e0;margin:8px 0}
 #v2Guide details{padding:9px;border-bottom:1px solid #38404e}#v2Guide summary{cursor:pointer;color:#ffc391}
 #v2Progress{display:block;width:100%;accent-color:#ff9d3e}
+.v2TrainHelp{border-left:3px solid #ff963e;padding:9px 11px;background:#281d16;border-radius:0 8px 8px 0;color:#fff4e7!important}
+#v2Train{width:100%;justify-content:center;font-weight:800;font-size:15px;padding:14px 12px;min-height:48px;background:#ff983e;color:#201208}
+#v2Train:disabled{background:#54402f;color:#cdbbaa}
+#v2TrainMeta{min-height:24px;color:#ffd9b6}
 @media(max-width:1100px){.v2Grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v2Wide{grid-column:1/-1}}
 @media(max-width:650px){.v2Grid{grid-template-columns:minmax(0,1fr);padding:9px}.v2Double{grid-column:1/-1}#v2Canvas{height:460px}}
 </style>
@@ -69,7 +73,8 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
   <div class="half"><label for="v2Lr">Learning rate<input id="v2Lr" type="number" min="0.00001" max="0.5" step="0.0001" value="0.003"></label>
   <label for="v2Patience">Early stopping patience (0 = off)<input id="v2Patience" type="number" min="0" max="40" value="0"></label></div>
   <label for="v2Optimizer">Otimizador<select id="v2Optimizer"><option value="adam">Adam</option><option value="sgd">SGD</option></select></label>
-  <button id="v2Train" class="primary">Treinar rede configurada</button><button id="v2Cancel" disabled>Cancelar</button>
+  <p id="v2TrainHelp" class="v2TrainHelp"><strong>Treine em um clique.</strong> Escolha os neurônios e parâmetros acima; ao clicar, o laboratório inicializa a rede, gera as amostras selecionadas e treina de verdade na CPU. Não precisa clicar antes em “Inicializar” ou “Gerar”.</p>
+  <button id="v2Train" class="primary" type="button" title="Inicializa, gera dados e treina a rede com as configurações exibidas">Treinar rede configurada</button><button id="v2Cancel" disabled>Cancelar</button>
   <progress id="v2Progress" max="100" value="0"></progress><p id="v2TrainMeta">Não iniciado.</p>
  </div>
  <div class="v2Card v2Wide"><h3>04 · Mapa de neurônios e conexões reais</h3>

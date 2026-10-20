@@ -162,3 +162,50 @@ test('file:// double click equivalent: offline math engine loads and actually tr
   assert.deepEqual(errors,[]);
  }finally{await offline.close();}
 });
+
+test('one-click configured training works without prior initialization or dataset on HTTP Worker',async()=>{
+ const p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ try{
+  await p.goto(origin,{waitUntil:'load'});
+  assert.equal(await p.locator('#v2Train').isEnabled(),true,'Train button must not require manual preprocessing');
+  await p.selectOption('#v2Preset','32,16');
+  await p.selectOption('#v2Count','100');
+  await p.locator('#v2Epochs').fill('1');
+  await p.locator('#v2Train').click();
+  await p.waitForFunction(()=>document.querySelector('#v2ModelType')?.textContent.includes('Treinado'),null,{timeout:45000});
+  assert.match(await p.locator('#v2Architecture').innerText(),/200 → 32 → 16 → 2/);
+  assert.match(await p.locator('#v2Counts').innerText(),/training: 70/);
+  assert.match(await p.locator('#v2Status').innerText(),/Web Worker CPU/);
+  await p.locator('#v2Test').click();
+  await p.waitForFunction(()=>document.querySelector('#v2Results')?.textContent.includes('accuracy'));
+  assert.deepEqual(errors,[]);
+ }finally{await p.close();}
+});
+test('one-click configured training works from file:// without manually creating model',async()=>{
+ const p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ try{
+  await p.goto('file://'+path.join(root,'index.html'),{waitUntil:'load'});
+  assert.equal(await p.locator('#v2Train').isEnabled(),true);
+  await p.selectOption('#v2Preset','32,16');
+  await p.selectOption('#v2Count','100');
+  await p.locator('#v2Epochs').fill('1');
+  await p.locator('#v2Train').click();
+  await p.waitForFunction(()=>document.querySelector('#v2ModelType')?.textContent.includes('Treinado'),null,{timeout:45000});
+  assert.match(await p.locator('#v2Counts').innerText(),/training: 70/);
+  assert.match(await p.locator('#v2Status').innerText(),/CPU offline/);
+  await p.locator('#v2Test').click();
+  await p.waitForFunction(()=>document.querySelector('#v2Results')?.textContent.includes('accuracy'));
+  assert.deepEqual(errors,[]);
+ }finally{await p.close();}
+});
+test('invalid training data split is visibly rejected, without fabricated model',async()=>{
+ const p=await ctx.newPage();
+ try{
+  await p.goto(origin,{waitUntil:'load'});
+  await p.locator('#v2SplitTrain').fill('80');
+  await p.locator('#v2Train').click();
+  assert.match(await p.locator('#v2Status').innerText(),/somar 100%/);
+  assert.match(await p.locator('#v2ModelType').innerText(),/Sem pesos/);
+  assert.equal(await p.locator('#v2Train').isEnabled(),true);
+ }finally{await p.close();}
+});

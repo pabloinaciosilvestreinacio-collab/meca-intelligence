@@ -8,7 +8,8 @@
 2. Baixe o artifact **MECA-Neural-Lab-OFFLINE** (contém um ZIP).
 3. Extraia **MECA-Neural-Lab-OFFLINE.zip**; mantenha a pasta \`src\` ao lado de \`index.html\`.
 4. Abra \`MECA-Neural-Lab/index.html\` no **Edge ou Chrome**. O aviso **CPU local offline** confirma que o motor matemático carregou. A criação da rede e o treinamento funcionam nesse modo sem Python e sem servidor.
-5. Teste 100 amostras, \`32,16\`, uma época, Adam. Depois aumente a carga se estiver estável.
+5. Escolha o preset \`32,16\`, **100 amostras**, **1 época** e **Adam**. Clique diretamente em **Treinar rede configurada**. O botão não depende mais de inicializar a arquitetura ou gerar amostras primeiro: ele executa as três operações, em sequência, com cálculos reais. Depois clique em **Avaliar conjunto de teste**.
+6. Confira o indicador de execução (CPU offline ou Web Worker CPU). Se o treinamento não iniciar, o motivo aparece no painel e ao lado da barra de progresso.
 
 O modo offline executa realmente na CPU da página e limita a geração a 5.000 amostras. O modo HTTP/HTTPS usa Web Worker, permitindo o benchmark de 10.000. Os arquivos \`src/core.js\`, \`src/lab.js\`, \`src/v2-core.js\`, \`src/v2-offline.js\`, \`src/v2-ui.js\` e \`src/v2-worker.js\` devem permanecer disponíveis. Não tente abrir o arquivo \`index.html\` diretamente na visualização de código do GitHub: isso não executa o laboratório.
 

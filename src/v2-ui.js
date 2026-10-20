@@ -13,7 +13,7 @@ let datasetInfo=null,trainingMs=null,lastEvaluation=null;
 const cnv=$('#v2Canvas'),ctx=cnv.getContext('2d'),style={r:3,density:60,opacity:45,width:1,minMagnitude:0,scheme:'orange-blue',showLabels:true};
 let shown=[],chosen=null,zoom=1,panX=0,panY=0,drag=null,drawing=null,imported=null;
 const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample','v2Compare']){
- const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&(!dataReady||!model))||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Compare'&&!dataReady)||(id==='v2Save'&&!model);
+ const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&!worker)||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Compare'&&!dataReady)||(id==='v2Save'&&!model);
 }$('#v2Cancel').disabled=!busy;};
 let executionMode='unavailable';
 function setOfflineMode(reason){
@@ -70,7 +70,14 @@ function download(obj,name){const bytes=typeof obj==='string'?obj:JSON.stringify
 function receive({data:e}){
  try{
  switch(e.event){
- case 'error':setBusy(false);status(e.message,true);break;
+ case 'error':
+  setBusy(false);
+  $('#v2TrainMeta').textContent='Treinamento não iniciado: '+e.message;
+  status(e.message,true);break;
+ case 'preparing':
+  $('#v2TrainMeta').textContent=e.message;
+  $('#v2Progress').value=0;
+  status(e.message);break;
  case 'generated':
   dataReady=true;setBusy(false);counters=e.counts;history=[];lastEvaluation=null;trainingMs=null;
   datasetInfo={...e.metadata,counts:e.counts,baselineOnValidation:e.baselineOnValidation,generationMs:e.generationMs,estimate:e.estimate};$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
@@ -86,7 +93,15 @@ function receive({data:e}){
   $('#v2TrainMeta').textContent='Época '+e.stat.epoch+' · val. accuracy '+(e.stat.validation.accuracy*100).toFixed(1)+'% · loss '+e.stat.validation.loss.toFixed(4)+' · '+tms(e.elapsedMs);
   break;
  case 'trained':
-  model=e.model;setBusy(false);history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
+  model=e.model;history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
+  if(e.counts&&e.metadata){
+   dataReady=true;counters=e.counts;
+   datasetInfo={...e.metadata,counts:e.counts,baselineOnValidation:e.baselineOnValidation,
+    generationMs:e.generationMs,estimate:V.estimate(e.metadata.count,model.shape,e.history.length)};
+   $('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
+   $('#v2DatasetMeta').textContent='Seed '+e.metadata.seed+' · '+fmt(e.metadata.count)+' cenários sintéticos gerados e usados no treinamento.';
+  }
+  setBusy(false); // Refresh controls only after dataReady/model are updated.
   $('#v2Progress').value=100;renderMetrics();render();
   status('Treinamento real concluído em '+tms(e.trainingMs)+' no modo '+(executionMode==='offline-cpu'?'CPU offline':'Web Worker CPU')+'. Métricas sintéticas não validam o robô físico.');
   break;
@@ -135,8 +150,29 @@ $('#v2Generate').addEventListener('click',()=>{try{
  Number($('#v2SplitTrain').value)/100,Number($('#v2SplitVal').value)/100,Number($('#v2SplitTest').value)/100],shape:c.shape,epochs:Number($('#v2Epochs').value)}});
  dataReady=false;
  }catch(e){status(e.message,true);setBusy(false);}});
-$('#v2Train').addEventListener('click',()=>{try{if(model?.trained&&!confirm('Treinar a partir dos pesos atuais? O modelo salvo só muda após concluir.'))return;
- history=[];$('#v2Progress').value=0;run('train',{options:opts()});}catch(e){status(e.message,true);}});
+$('#v2Train').addEventListener('click',()=>{
+ try{
+  if(busy)return;
+  const cfg=parseShape(),options=opts();
+  const count=Number($('#v2Count').value),seed=Number($('#v2Seed').value);
+  const split=[Number($('#v2SplitTrain').value)/100,
+   Number($('#v2SplitVal').value)/100,Number($('#v2SplitTest').value)/100];
+  // Validate BEFORE starting; errors are visible to the user rather than a disabled button.
+  if(!Number.isInteger(count)||count<20||count>(executionMode==='offline-cpu'?5000:10000))
+   throw Error('Amostras fora do limite deste ambiente. Use até '+(executionMode==='offline-cpu'?'5.000':'10.000')+'.');
+  if(!Number.isSafeInteger(seed))throw Error('A seed precisa ser um inteiro.');
+  if(split.some(x=>!Number.isFinite(x)||x<=0)||Math.abs(split.reduce((a,b)=>a+b,0)-1)>1e-8)
+   throw Error('Treino + validação + teste precisam somar 100%.');
+  if(model?.trained&&!confirm('Treinar uma nova rede com as configurações atuais? A rede anterior será substituída somente ao concluir; exporte-a antes se desejar guardá-la.'))return;
+  $('#v2TrainMeta').textContent='Preparando rede '+cfg.shape.join(' → ')+' e '+fmt(count)+' amostras...';
+  $('#v2Progress').value=0;
+  run('trainConfigured',{config:{hidden:cfg.shape.slice(1,-1),
+   activation:cfg.activation,count,seed,split},options});
+ }catch(e){
+  $('#v2TrainMeta').textContent='Não foi possível iniciar: '+e.message;
+  status(e.message,true);
+ }
+});
 $('#v2Cancel').addEventListener('click',()=>{if(busy)send('cancel');});
 $('#v2Test').addEventListener('click',()=>run('test'));
 $('#v2Sample').addEventListener('click',()=>run('sample',{index:Number($('#v2SampleIndex').value)}));
