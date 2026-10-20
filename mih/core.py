@@ -337,7 +337,7 @@ def diagnose(run):
         add("INSUFFICIENT_SAMPLES", "Menos de duas amostras; evolução temporal indisponível.",
             {"samples":len(s)},"observed")
 
-    return {
+    result = {
         "run_id": run["run_id"], "source": run["source"], "schema_version": SCHEMA,
         "status": "anomalies_observed_or_suspected" if issues else "indeterminate" if missing else "no_anomaly_observed",
         "issues": issues, "missing_channels": missing, "sample_count": len(s),
@@ -349,6 +349,33 @@ def diagnose(run):
             "A origem real/simulation é declarada pelo importador, não autenticada.",
         ],
     }
+    result["proposed_experiments"] = recommend_experiments(result)
+    return result
+
+
+def recommend_experiments(diagnosis):
+    """Plano apenas informativo; nunca altera configurações ou comanda hardware."""
+    matrix = {
+        "IMU_NO_ANGULAR_PROGRESS": "Em bancada, comparar IMU com referência externa durante giros controlados de baixa potência; revisar orientação e resetYaw.",
+        "NO_ENCODER_PROGRESS_ME": "Verificar cabeamento ME e encoder com teste isolado, baixa potência e rodas suspensas; registrar ticks e tensão.",
+        "NO_ENCODER_PROGRESS_MD": "Verificar cabeamento MD e encoder com teste isolado, baixa potência e rodas suspensas; registrar ticks e tensão.",
+        "WHEEL_PROGRESS_ASYMMETRY": "Repetir deslocamento reto em superfície controlada, com tensão e carga registradas; verificar montagem e patinagem.",
+        "DISTANCE_TARGET_MISMATCH": "Medir distância real com régua/trena e comparar com ticks; repetir com a mesma velocidade e bateria.",
+        "TIMEOUT_REPORTED": "Registrar etapa e condição do timeout; separar atraso de software de impedimento de movimento.",
+        "SAMPLING_GAP": "Repetir coleta com relógio monotônico, frequência nominal explícita e descarte registrado.",
+        "INSUFFICIENT_SAMPLES": "Capturar uma execução completa com timestamps crescentes e no mínimo duas leituras.",
+    }
+    proposals = [{"trigger":k, "experiment":text, "status":"proposal_not_executed"}
+                 for v in diagnosis["issues"] for k,text in matrix.items() if v["code"]==k]
+    if diagnosis["missing_channels"]:
+        proposals.append({"trigger":"MISSING_CHANNELS",
+            "experiment":"Adicionar no log os canais ausentes: " + ", ".join(diagnosis["missing_channels"]) + "; manter campos não medidos como null.",
+            "status":"proposal_not_executed"})
+    if not proposals:
+        proposals.append({"trigger":"BASELINE",
+            "experiment":"Repetir o ensaio com código e montagem versionados, registro de sessão e medições independentes.",
+            "status":"proposal_not_executed"})
+    return proposals[:8]
 
 
 class Registry:
