@@ -47,6 +47,10 @@ test('dashboard, dynamic network, worker training, test and real activations',as
  await page.locator('#v2Density').fill('30');
  await page.locator('#v2Radius').fill('7');
  await page.locator('#v2Canvas').click({position:{x:60,y:50}});
+ const graph=await page.locator('#v2GraphStats').innerText();
+ const matched=graph.match(/(\d+)\/\d+ conexões visíveis/);
+ assert.ok(matched&&Number(matched[1])>0,'Selected neuron must reveal actual incident weights: '+graph);
+ await page.locator('#v2ResetStyle').click();
  await page.screenshot({path:'v2-desktop.png',fullPage:true});
  assert.deepEqual(errors,[]);
 });
