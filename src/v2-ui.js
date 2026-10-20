@@ -9,7 +9,7 @@ const $=s=>root.querySelector(s);
 const status=(message,bad=false)=>{$('#v2Status').textContent=message;$('#v2Status').className='v2Status'+(bad?' bad':'');};
 const workerSupported=!!window.Worker;
 let worker=null,model=null,dataReady=false,busy=false,counters={},history=[],lastSample=null,net=null;
-const cnv=$('#v2Canvas'),ctx=cnv.getContext('2d'),style={r:3,density:60,opacity:45,gap:220};
+const cnv=$('#v2Canvas'),ctx=cnv.getContext('2d'),style={r:3,density:60,opacity:45,width:1,minMagnitude:0,scheme:'orange-blue',showLabels:true};
 let shown=[],chosen=null,zoom=1,panX=0,panY=0,drag=null,drawing=null,imported=null;
 const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample']){
  const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&(!dataReady||!model))||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Save'&&!model);
@@ -176,7 +176,7 @@ function render(){
  ctx.setTransform(dpr,0,0,dpr,panX*dpr,panY*dpr);ctx.scale(zoom,zoom);
  ctx.clearRect(-panX/zoom,-panY/zoom,w/zoom,h/zoom);ctx.fillStyle='#0b0e15';ctx.fillRect(-panX/zoom,-panY/zoom,w/zoom,h/zoom);
  shown=layerPositions();const all=V.parameters(model.shape)-model.shape.slice(1).reduce((a,b)=>a+b,0);
- const threshold=(100-style.density)/100,opa=style.opacity/100;
+ const threshold=Math.max((100-style.density)/100,style.minMagnitude/100),opa=style.opacity/100;
  let displayed=0,positive=0,negative=0;
  const targets=shown.slice(1),totalCap=6500;
  for(let l=0;l<targets.length;l++){
@@ -187,8 +187,8 @@ function render(){
    const selected=chosen&&(chosen.l===l&&chosen.i===a.i||chosen.l===l+1&&chosen.i===b.i);
    if(chosen&&!selected)continue;
    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-   ctx.strokeStyle=weight<0?'rgba(139,171,218,'+Math.min(.85,opa*magnitude)+')':'rgba(255,151,65,'+Math.min(.9,opa*magnitude)+')';
-   ctx.lineWidth=selected?2.2:.35+.75*magnitude;ctx.stroke();displayed++;if(weight<0)negative++;else positive++;
+   ctx.strokeStyle=weight<0?(style.scheme==='mono'?'rgba(154,164,179,':'rgba(139,171,218,')+Math.min(.85,opa*magnitude)+')':'rgba(255,151,65,'+Math.min(.9,opa*magnitude)+')';
+   ctx.lineWidth=(selected?2.2:.35+.75*magnitude)*style.width;ctx.stroke();displayed++;if(weight<0)negative++;else positive++;
   }
  }
  let nodes=0;
@@ -198,8 +198,8 @@ function render(){
   ctx.fillStyle=activation===undefined?'rgba(255,167,85,.7)':'rgba(255,167,85,'+strength+')';ctx.fill();nodes++;
  }
  ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillStyle='#e6b486';
- shown.forEach((layer,l)=>ctx.fillText(l===0?'Entradas (200)':l===shown.length-1?'Saídas (2)':'Oculta '+l+' ('+model.shape[l]+')',layer[0].x,19));
- $('#v2GraphStats').textContent=nodes+'/'+model.shape.reduce((a,b)=>a+b,0)+' neurônios visíveis · '+displayed+'/'+all+' conexões visíveis (filtro real), '+positive+' positivas, '+negative+' negativas · zoom '+zoom.toFixed(2)+'×';
+ if(style.showLabels)shown.forEach((layer,l)=>ctx.fillText(l===0?'Entradas (200)':l===shown.length-1?'Saídas (2)':'Oculta '+l+' ('+model.shape[l]+')',layer[0].x,19));
+ $('#v2GraphStats').textContent=nodes+'/'+model.shape.reduce((a,b)=>a+b,0)+' neurônios visíveis · '+displayed+'/'+all+' conexões visíveis (filtro real), '+positive+' positivas, '+negative+' negativas · limite de peso '+threshold.toFixed(2)+' · zoom '+zoom.toFixed(2)+'×';
  details();
 }
 cnv.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.min(3,Math.max(.6,zoom*(e.deltaY>0?.9:1.1)));render();},{passive:false});
@@ -214,10 +214,28 @@ cnv.addEventListener('pointerup',e=>{
  drag=null;
 });
 $('#v2ResetView').addEventListener('click',()=>{zoom=1;panX=panY=0;chosen=null;render();});
-['v2Radius','v2Density','v2Opacity'].forEach(id=>$('#'+id).addEventListener('input',()=>{
+function captureVisualPrefs(){
  style.r=Number($('#v2Radius').value);style.density=Number($('#v2Density').value);
- style.opacity=Number($('#v2Opacity').value);render();
-}));
+ style.opacity=Number($('#v2Opacity').value);style.width=Number($('#v2LineWidth').value);
+ style.minMagnitude=Number($('#v2MinMagnitude').value);
+ style.scheme=$('#v2ColorScheme').value;style.showLabels=$('#v2ShowLabels').checked;
+ try{localStorage.setItem('meca-v2-visual-v1',JSON.stringify(style));}catch{}
+ render();
+}
+for(const id of ['v2Radius','v2Density','v2Opacity','v2LineWidth','v2MinMagnitude','v2ColorScheme','v2ShowLabels'])
+ $('#'+id).addEventListener('input',captureVisualPrefs);
+try{
+ const preference=JSON.parse(localStorage.getItem('meca-v2-visual-v1')||'null');
+ if(preference&&typeof preference==='object'){
+  for(const [key,id] of [['r','v2Radius'],['density','v2Density'],['opacity','v2Opacity'],
+      ['width','v2LineWidth'],['minMagnitude','v2MinMagnitude'],['scheme','v2ColorScheme']]){
+   if(preference[key]!==undefined)
+    $('#'+id).value=String(preference[key]);
+  }
+  $('#v2ShowLabels').checked=preference.showLabels!==false;
+  captureVisualPrefs();
+ }
+}catch{}
 const lessons=[
 ['1 — Anatomia da rede','As 200 entradas representam 40 leituras × 5 canais. Camadas ocultas aplicam transformações; duas saídas representam IMU travada e normal.','Abra uma arquitetura e clique em um neurônio.'],
 ['2 — Arquiteturas e custo','Mais camadas/pesos aumentam capacidade e custo; podem também levar ao sobreajuste.','Mude o preset e reinicialize. Observe a contagem de pesos.'],
