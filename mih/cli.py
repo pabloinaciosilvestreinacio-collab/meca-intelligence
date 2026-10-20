@@ -34,6 +34,8 @@ def _report(run, diagnosis):
                   f"  - Evidência: `{_json(issue['evidence']).replace(chr(10), ' ')}`"]
     if diagnosis["missing_channels"]:
         lines.append("- [P] Canais insuficientes: " + ", ".join(diagnosis["missing_channels"]))
+    lines += ["", "## Próximos experimentos propostos"]
+    lines.extend("- [P] "+item["trigger"]+": "+item["experiment"] for item in diagnosis["proposed_experiments"])
     lines += ["", "## Limitações e próximos ensaios"]
     lines.extend("- [P] " + val for val in diagnosis["limitations"])
     lines += ["- [P] Coletar nova execução com canais ausentes e verificar hipótese em bancada antes de qualquer alteração do OpMode.",
