@@ -35,48 +35,8 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/pabloinaciosilvestreinacio-collab/mecatiger-hub/main/public/Screenshot_20261004_131612_Instagram.jpg" alt="Meca Tiger" width="35" height="35" style="object-fit:cover;border-radius:8px" onerror="this.remove();this.parentNode.textContent='✦'"></div><div><h1>MECA <span style="color:var(--gold)">NEURAL VIEWER</span></h1><p>Meca Intelligence · inspeção de rede neural local e experimental</p></div></div><div class="tools"><a class="fakebutton primary" href="#laboratorio" style="text-decoration:none">Treinar IA · 900 cenários ↓</a><span class="pill">200 → 20 → 10 → 2 · Edge Impulse + treino web</span></div></header>
+<header><div class="brand"><div class="logo"><img src="https://raw.githubusercontent.com/pabloinaciosilvestreinacio-collab/mecatiger-hub/main/public/Screenshot_20261004_131612_Instagram.jpg" alt="Meca Tiger" width="35" height="35" style="object-fit:cover;border-radius:8px" onerror="this.remove();this.parentNode.textContent='✦'"></div><div><h1>MECA <span style="color:var(--gold)">INTELLIGENCE V2</span></h1><p>MECA TIGER FTC #32578 · Laboratório de treinamento e análise de redes neurais</p></div></div><div class="tools"><a class="fakebutton primary" href="#neuralV2" style="text-decoration:none">Abrir laboratório V2 ↓</a><span class="pill">Arquitetura configurável · CPU Web Worker</span></div></header>
 <main>
-<section class="mainSection">
- <div class="bar"><div><h2>Mapa dos neurônios</h2><small id="networkState">Prévia da arquitetura · sem pesos carregados</small></div><div class="tools"><label class="fakebutton" for="modelFile" style="margin:0">📂 Abrir ZIP / C++<input id="modelFile" type="file" accept=".zip,.cpp,.h"></label><label class="fakebutton" for="csvFile" style="margin:0">📈 Abrir CSV<input id="csvFile" type="file" accept=".csv,text/csv"></label><button id="saveBtn">↧ Salvar imagem</button></div></div>
- <div class="canvasWrap"><canvas id="network"></canvas><div id="hoverHint">Passe o mouse sobre um neurônio para inspecionar. Clique para fixar.</div></div>
- <div class="legend"><span class="swatch"></span> Pesos positivos <span class="swatch neg"></span> Pesos negativos <span class="swatch gray"></span> Arquitetura ilustrativa (antes de importar) · <span class="chip">Selecione um neurônio</span></div>
- <div class="metrics"><div class="metric"><strong id="cntLayers">4</strong><span>Camadas</span></div><div class="metric"><strong id="cntNeurons">232</strong><span>Neurônios</span></div><div class="metric"><strong id="cntEdges">4.220</strong><span>Conexões</span></div><div class="metric"><strong id="modelStatus">Não carregado</strong><span>Pesos do modelo</span></div></div>
-</section>
-<aside>
- <div class="panel"><h3>01 · Modelo treinado</h3><div class="status" id="status">Carregue o ZIP que você exportou no Edge Impulse. Os arquivos ficam no seu navegador; nada é enviado a servidores.</div><div class="row"><span class="muted">Formato</span><span id="fmt">—</span></div><div class="row"><span class="muted">Classes</span><span>IMU travada / Normal</span></div><div class="row"><span class="muted">Ativação</span><span>ReLU → ReLU → Softmax</span></div><p>Abre diretamente o ZIP com C++ compilado ou o arquivo <code>tflite_learn_*_compiled.cpp</code> extraído dele.</p></div>
- <div class="panel"><h3>02 · Opções visuais</h3><label for="density">Mostrar conexões mais fortes <span id="densityVal" style="float:right">70%</span></label><input id="density" type="range" min="1" max="100" value="70"><label for="brightness">Intensidade das conexões <span id="brightVal" style="float:right">55%</span></label><input id="brightness" type="range" min="5" max="100" value="55"><label style="display:flex;align-items:center;gap:8px"><input id="showAll" type="checkbox" checked> Mostrar todos os neurônios de entrada</label><button id="resetSelect">Limpar seleção</button></div>
- <div class="panel"><h3>03 · Inferência de exemplo</h3><p id="dataName">Importe um CSV de 40 linhas, 20 Hz, com as colunas imu_yaw_deg, encoder_md_ticks, encoder_me_ticks, potencia_md e potencia_me.</p><div class="row"><span>IMU travada</span><strong id="probStuck">—</strong></div><div class="output"><div class="fill" id="barStuck"></div></div><div class="row"><span>Normal</span><strong id="probNormal">—</strong></div><div class="output"><div class="fill blue" id="barNormal"></div></div><p class="warn">Inferência local aproximada da rede INT8, não verificação bit a bit do motor TensorFlow Lite. Não usar para decisões críticas do robô.</p></div>
- <div class="panel"><h3>04 · Inspeção do neurônio</h3><div id="nodeDetail" class="muted">Clique em uma bolinha para mostrar sua camada, ativação e conexões com pesos reais.</div></div>
-</aside>
-<section class="labSection" id="laboratorio">
- <div class="bar"><div><h2>Laboratório de treinamento · Meca Intelligence</h2><small>Gera conjuntos sintéticos, treina uma MLP no navegador e avalia dados reservados. Não treina o modelo INT8 importado.</small></div><span class="chip">Sem servidor · Sem chave de API</span></div>
- <div class="labBody">
-  <div class="labCard"><h3>01 · Gerar cenários</h3>
-   <p>900 exemplos sintéticos a 20 Hz, com curvas, reversões, ruído, movimento reto, paradas e congelamentos da IMU.</p>
-   <button class="primary" id="generateBtn">Gerar 900 cenários</button><button id="exportDataBtn">Exportar ZIP CSV</button>
-   <div class="row"><span>Treino</span><strong id="count_training">0</strong></div><div class="row"><span>Validação</span><strong id="count_validation">0</strong></div><div class="row"><span>Teste reservado</span><strong id="count_testing">0</strong></div>
-   <p id="labBaseline" class="muted">Ainda não gerado</p>
-  </div>
-  <div class="labCard"><h3>02 · Treinar MLP própria</h3>
-   <p>Treinamento supervisionado local (200 → 20 → 10 → 2) com retropropagação e Adam. Não altera o pacote Edge Impulse.</p>
-   <label for="epochs">Épocas <input type="number" min="1" max="120" value="24" id="epochs"></label>
-   <button class="primary" id="trainBtn">Treinar no navegador</button><button id="exportModelBtn">Salvar modelo JSON</button>
-   <button id="loadWebModel">Abrir modelo JSON</button><input type="file" id="webModelFile" accept=".json,application/json" hidden>
-   <progress id="labProgress" max="100" value="0"></progress>
-   <p id="labMetrics">Rede ainda não treinada.</p>
-  </div>
-  <div class="labCard"><h3>03 · Verificar generalização</h3>
-   <p>Validação durante o treino; conjunto de teste separado e não utilizado na otimização dos pesos.</p>
-   <button class="primary" id="testBtn">Avaliar teste independente</button>
-   <button id="labSampleBtn">Visualizar exemplo na rede</button>
-   <div id="labTest" class="muted">Nenhum teste executado ainda.</div>
-   <p id="labSampleInfo" class="muted">Abra um cenário para observar suas ativações e conexões.</p>
-  </div>
-  <div class="full"><div class="status" id="labStatus">Comece clicando em Gerar 900 cenários. Os testes são inteiramente sintéticos, não representam hardware real.</div></div>
- </div>
-</section>
-
 <section id="neuralV2" aria-label="Laboratório Neural V2">
  <div class="v2Hero"><div><h2>MECA NEURAL LAB <span style="color:#fff">V2</span></h2>
  <p>Arquiteturas reais configuráveis · treinamento local · inspeção de pesos · engenharia reproduzível</p></div>
@@ -118,6 +78,11 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
   <div class="half"><label for="v2Radius">Raio dos neurônios<input id="v2Radius" type="range" min="2" max="8" value="3"></label>
    <label for="v2Density">Densidade de conexões exibidas<input id="v2Density" type="range" min="5" max="100" value="60"></label></div>
   <label for="v2Opacity">Opacidade dos pesos<input id="v2Opacity" type="range" min="5" max="100" value="45"></label>
+  <div class="half"><label for="v2LineWidth">Espessura de conexões<input id="v2LineWidth" type="range" min="1" max="5" step=".5" value="1"></label>
+  <label for="v2MinMagnitude">Peso mínimo (% relativo por camada)<input id="v2MinMagnitude" type="range" min="0" max="100" value="0"></label></div>
+  <div class="half"><label for="v2ColorScheme">Esquema de cores
+  <select id="v2ColorScheme"><option value="orange-blue">Laranja / azul (sinais)</option><option value="mono">Grafite / âmbar</option></select></label>
+  <label for="v2ShowLabels" style="display:flex;gap:8px;align-items:center"><input id="v2ShowLabels" type="checkbox" checked style="width:auto"> Exibir rótulos das camadas</label></div>
   <button id="v2ResetView">Redefinir zoom, posição e seleção</button>
   <p>Use a roda do mouse para zoom, arraste para deslocar e clique em um neurônio para inspecionar. Laranja = peso positivo; azul = peso negativo. O limite de renderização prioriza desempenho sem inventar pesos.</p>
   <pre id="v2Neuron">Clique em um neurônio para inspecionar pesos, bias e ativação.</pre>
@@ -152,6 +117,47 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
  </div>
  <div class="v2Status" id="v2Status" role="status">Aguardando inicialização.</div>
 </section>
+<section class="mainSection">
+ <div class="bar"><div><h2>Mapa dos neurônios</h2><small id="networkState">Prévia da arquitetura · sem pesos carregados</small></div><div class="tools"><label class="fakebutton" for="modelFile" style="margin:0">📂 Abrir ZIP / C++<input id="modelFile" type="file" accept=".zip,.cpp,.h"></label><label class="fakebutton" for="csvFile" style="margin:0">📈 Abrir CSV<input id="csvFile" type="file" accept=".csv,text/csv"></label><button id="saveBtn">↧ Salvar imagem</button></div></div>
+ <div class="canvasWrap"><canvas id="network"></canvas><div id="hoverHint">Passe o mouse sobre um neurônio para inspecionar. Clique para fixar.</div></div>
+ <div class="legend"><span class="swatch"></span> Pesos positivos <span class="swatch neg"></span> Pesos negativos <span class="swatch gray"></span> Arquitetura ilustrativa (antes de importar) · <span class="chip">Selecione um neurônio</span></div>
+ <div class="metrics"><div class="metric"><strong id="cntLayers">4</strong><span>Camadas</span></div><div class="metric"><strong id="cntNeurons">232</strong><span>Neurônios</span></div><div class="metric"><strong id="cntEdges">4.220</strong><span>Conexões</span></div><div class="metric"><strong id="modelStatus">Não carregado</strong><span>Pesos do modelo</span></div></div>
+</section>
+<aside>
+ <div class="panel"><h3>01 · Modelo treinado</h3><div class="status" id="status">Carregue o ZIP que você exportou no Edge Impulse. Os arquivos ficam no seu navegador; nada é enviado a servidores.</div><div class="row"><span class="muted">Formato</span><span id="fmt">—</span></div><div class="row"><span class="muted">Classes</span><span>IMU travada / Normal</span></div><div class="row"><span class="muted">Ativação</span><span>ReLU → ReLU → Softmax</span></div><p>Abre diretamente o ZIP com C++ compilado ou o arquivo <code>tflite_learn_*_compiled.cpp</code> extraído dele.</p></div>
+ <div class="panel"><h3>02 · Opções visuais</h3><label for="density">Mostrar conexões mais fortes <span id="densityVal" style="float:right">70%</span></label><input id="density" type="range" min="1" max="100" value="70"><label for="brightness">Intensidade das conexões <span id="brightVal" style="float:right">55%</span></label><input id="brightness" type="range" min="5" max="100" value="55"><label style="display:flex;align-items:center;gap:8px"><input id="showAll" type="checkbox" checked> Mostrar todos os neurônios de entrada</label><button id="resetSelect">Limpar seleção</button></div>
+ <div class="panel"><h3>03 · Inferência de exemplo</h3><p id="dataName">Importe um CSV de 40 linhas, 20 Hz, com as colunas imu_yaw_deg, encoder_md_ticks, encoder_me_ticks, potencia_md e potencia_me.</p><div class="row"><span>IMU travada</span><strong id="probStuck">—</strong></div><div class="output"><div class="fill" id="barStuck"></div></div><div class="row"><span>Normal</span><strong id="probNormal">—</strong></div><div class="output"><div class="fill blue" id="barNormal"></div></div><p class="warn">Inferência local aproximada da rede INT8, não verificação bit a bit do motor TensorFlow Lite. Não usar para decisões críticas do robô.</p></div>
+ <div class="panel"><h3>04 · Inspeção do neurônio</h3><div id="nodeDetail" class="muted">Clique em uma bolinha para mostrar sua camada, ativação e conexões com pesos reais.</div></div>
+</aside>
+<section class="labSection" id="laboratorio">
+ <div class="bar"><div><h2>Laboratório de treinamento · Meca Intelligence</h2><small>Gera conjuntos sintéticos, treina uma MLP no navegador e avalia dados reservados. Não treina o modelo INT8 importado.</small></div><span class="chip">Sem servidor · Sem chave de API</span></div>
+ <div class="labBody">
+  <div class="labCard"><h3>01 · Gerar cenários</h3>
+   <p>900 exemplos sintéticos a 20 Hz, com curvas, reversões, ruído, movimento reto, paradas e congelamentos da IMU.</p>
+   <button class="primary" id="generateBtn">Gerar 900 cenários</button><button id="exportDataBtn">Exportar ZIP CSV</button>
+   <div class="row"><span>Treino</span><strong id="count_training">0</strong></div><div class="row"><span>Validação</span><strong id="count_validation">0</strong></div><div class="row"><span>Teste reservado</span><strong id="count_testing">0</strong></div>
+   <p id="labBaseline" class="muted">Ainda não gerado</p>
+  </div>
+  <div class="labCard"><h3>02 · Treinar MLP própria</h3>
+   <p>Treinamento supervisionado local (200 → 20 → 10 → 2) com retropropagação e Adam. Não altera o pacote Edge Impulse.</p>
+   <label for="epochs">Épocas <input type="number" min="1" max="120" value="24" id="epochs"></label>
+   <button class="primary" id="trainBtn">Treinar no navegador</button><button id="exportModelBtn">Salvar modelo JSON</button>
+   <button id="loadWebModel">Abrir modelo JSON</button><input type="file" id="webModelFile" accept=".json,application/json" hidden>
+   <progress id="labProgress" max="100" value="0"></progress>
+   <p id="labMetrics">Rede ainda não treinada.</p>
+  </div>
+  <div class="labCard"><h3>03 · Verificar generalização</h3>
+   <p>Validação durante o treino; conjunto de teste separado e não utilizado na otimização dos pesos.</p>
+   <button class="primary" id="testBtn">Avaliar teste independente</button>
+   <button id="labSampleBtn">Visualizar exemplo na rede</button>
+   <div id="labTest" class="muted">Nenhum teste executado ainda.</div>
+   <p id="labSampleInfo" class="muted">Abra um cenário para observar suas ativações e conexões.</p>
+  </div>
+  <div class="full"><div class="status" id="labStatus">Comece clicando em Gerar 900 cenários. Os testes são inteiramente sintéticos, não representam hardware real.</div></div>
+ </div>
+</section>
+
+
 </main>
 <div class="footer">Meca Intelligence Browser Lab. Dois modelos independentes: exportação Edge Impulse INT8 (visualização/inferência aproximada) e MLP treinada no navegador (retropropagação real). Este visualizador não é a página original NN-Visualizer. O modelo e seus pesos não estão embutidos neste arquivo; são lidos somente do arquivo selecionado. O SDK do Edge Impulse contém condições de licença específicas: confirme que sua assinatura permite o uso e não publique arquivos de modelo sem verificar os termos. Dados sintéticos não validam falhas no Mequinha real.</div>
 <script>
