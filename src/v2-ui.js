@@ -15,12 +15,38 @@ let shown=[],chosen=null,zoom=1,panX=0,panY=0,drag=null,drawing=null,imported=nu
 const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample','v2Compare']){
  const el=$('#'+id);if(el)el.disabled=busy||(id==='v2Train'&&(!dataReady||!model))||(id==='v2Test'&&(!dataReady||!model))||(id==='v2Sample'&&(!dataReady||!model))||(id==='v2Compare'&&!dataReady)||(id==='v2Save'&&!model);
 }$('#v2Cancel').disabled=!busy;};
+let executionMode='unavailable';
+function setOfflineMode(reason){
+ try{
+  worker?.terminate();
+  worker=window.MecaOfflineRunner();
+  worker.addEventListener('message',receive);
+  executionMode='offline-cpu';
+  $('#v2Environment').textContent='CPU local offline (arquivo): treinamento real até 5.000 amostras. Sem Worker.';
+  status(reason+' Executando cálculos reais no próprio navegador, sem servidor.');
+  busy=false;sync();
+ }catch(e){
+  worker=null;executionMode='unavailable';
+  $('#v2Environment').textContent='Indisponível: faltam arquivos JavaScript.';
+  status('Não foi possível iniciar o laboratório: '+e.message,true);
+  busy=false;sync();
+ }
+}
 function newWorker(){
- if(!workerSupported){status('Web Worker indisponível neste navegador; não há processamento simulado.',true);return;}
  worker?.terminate();
- try{worker=new Worker('src/v2-worker.js');worker.addEventListener('message',receive);
- worker.addEventListener('error',e=>{busy=false;sync();status('Erro no Worker: '+e.message,true);});}
- catch(e){status('Worker requer HTTP local. Execute python -m http.server 8000 e abra http://localhost:8000.',true);}
+ if(location.protocol==='file:'||!workerSupported){
+  setOfflineMode('Modo local detectado.');
+  return;
+ }
+ try{
+  worker=new Worker('src/v2-worker.js');
+  worker.addEventListener('message',receive);
+  worker.addEventListener('error',e=>{
+   setOfflineMode('Web Worker falhou: '+(e.message||'arquivo ou política de segurança bloqueou o carregamento')+'.');
+  });
+  executionMode='worker-cpu';
+  $('#v2Environment').textContent='CPU local · Web Worker real (HTTP/HTTPS).';
+ }catch(e){setOfflineMode('Web Worker não pôde ser iniciado: '+e.message+'.');}
 }
 function parseShape(){
  const raw=$('#v2Hidden').value.trim().split(/[\s,;]+/).map(Number);
@@ -32,7 +58,7 @@ function opts(){
   optimizer:$('#v2Optimizer').value,seed:Number($('#v2Seed').value),patience:Number($('#v2Patience').value)});
 }
 function send(action,more={}){
- if(!worker)throw Error('Web Worker indisponível. Use servidor HTTP local.');
+ if(!worker)throw Error('Motor de cálculo indisponível: confira os arquivos em src/.');
  worker.postMessage({action,...more});
 }
 function setBusy(v){busy=v;sync();}
@@ -62,7 +88,7 @@ function receive({data:e}){
  case 'trained':
   model=e.model;setBusy(false);history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
   $('#v2Progress').value=100;renderMetrics();render();
-  status('Treinamento concluído na CPU Web Worker em '+tms(e.trainingMs)+'. Métricas sintéticas não validam o robô físico.');
+  status('Treinamento real concluído em '+tms(e.trainingMs)+' no modo '+(executionMode==='offline-cpu'?'CPU offline':'Web Worker CPU')+'. Métricas sintéticas não validam o robô físico.');
   break;
  case 'tested':
   setBusy(false);const d=e.result;lastEvaluation=d;
@@ -125,7 +151,7 @@ $('#v2Report').addEventListener('click',()=>{
   architecture:{shape:model.shape,activation:model.activation,labels:model.labels,
     parameters:V.parameters(model.shape),model_origin:model.origin},
   dataset:datasetInfo,training:model.trained,
-  environment:'browser-cpu-worker',trainingMs:trainingMs,
+  environment:executionMode==='offline-cpu'?'browser-cpu-offline-fallback':'browser-cpu-worker',trainingMs:trainingMs,
   evaluation:lastEvaluation,
   imported_file:imported?{origin:imported.origin,format:imported.format,compatible:imported.compatible,
     missing_channels:imported.missing,physical_origin_authenticated:false}:null,
@@ -300,6 +326,7 @@ const guide=$('#v2Guide');
 for(const [title,body,action] of lessons){const d=document.createElement('details'),s=document.createElement('summary'),p=document.createElement('p'),a=document.createElement('p');
  s.textContent=title;p.textContent=body;a.textContent='Ação prática: '+action;d.append(s,p,a);guide.append(d);}
 window.addEventListener('resize',()=>{if(model)render();});
-$('#v2Environment').textContent=workerSupported?'CPU local · Web Worker (disponibilidade não comprova desempenho)':'Indisponível · requer Web Worker';
-newWorker();estimate();sync();status('V2 experimental. Inicialize a arquitetura, gere os dados e treine. Dados não saem do navegador.');
+newWorker();estimate();sync();
+if(executionMode==='worker-cpu')status('Laboratório V2 carregado no navegador. Inicialize uma rede, gere dados e treine. Tudo é processado localmente.');
+// The offline fallback sets its own accurate CPU status. Do not overwrite with a false Worker claim.
 })();
