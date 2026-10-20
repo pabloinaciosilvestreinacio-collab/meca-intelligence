@@ -45,12 +45,12 @@ function receive({data:e}){
  switch(e.event){
  case 'error':setBusy(false);status(e.message,true);break;
  case 'generated':
-  setBusy(false);dataReady=true;counters=e.counts;history=[];$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
+  dataReady=true;setBusy(false);counters=e.counts;history=[];$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
   $('#v2DatasetMeta').textContent='Seed '+e.metadata.seed+' · '+fmt(e.metadata.count)+' cenários sintéticos · gerados em '+tms(e.generationMs)+'.';
   status('Dados sintéticos gerados. Treinamento e teste continuam separados. Nenhuma coleta física foi executada.');
   break;
  case 'initialized':
-  setBusy(false);model=e.model;history=model.trained?.history||[];lastSample=null;chosen=null;renderMetrics();render();
+  model=e.model;setBusy(false);history=model.trained?.history||[];lastSample=null;chosen=null;renderMetrics();render();
   status('Arquitetura inicializada: '+model.shape.join(' → ')+'. Pesos são matematicamente reais, mas ainda não comprovam aprendizado.');
   break;
  case 'epoch':
@@ -58,7 +58,7 @@ function receive({data:e}){
   $('#v2TrainMeta').textContent='Época '+e.stat.epoch+' · val. accuracy '+(e.stat.validation.accuracy*100).toFixed(1)+'% · loss '+e.stat.validation.loss.toFixed(4)+' · '+tms(e.elapsedMs);
   break;
  case 'trained':
-  setBusy(false);model=e.model;history=e.history;lastSample=null;
+  model=e.model;setBusy(false);history=e.history;lastSample=null;
   $('#v2Progress').value=100;renderMetrics();render();
   status('Treinamento concluído na CPU Web Worker em '+tms(e.trainingMs)+'. Métricas sintéticas não validam o robô físico.');
   break;
