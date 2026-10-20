@@ -9,6 +9,7 @@ const $=s=>root.querySelector(s);
 const status=(message,bad=false)=>{$('#v2Status').textContent=message;$('#v2Status').className='v2Status'+(bad?' bad':'');};
 const workerSupported=!!window.Worker;
 let worker=null,model=null,dataReady=false,busy=false,counters={},history=[],lastSample=null,net=null;
+let datasetInfo=null,trainingMs=null,lastEvaluation=null;
 const cnv=$('#v2Canvas'),ctx=cnv.getContext('2d'),style={r:3,density:60,opacity:45,width:1,minMagnitude:0,scheme:'orange-blue',showLabels:true};
 let shown=[],chosen=null,zoom=1,panX=0,panY=0,drag=null,drawing=null,imported=null;
 const sync=()=>{for(const id of ['v2Generate','v2Train','v2Init','v2Benchmark','v2Save','v2LoadBtn','v2Test','v2Sample','v2Compare']){
@@ -45,12 +46,13 @@ function receive({data:e}){
  switch(e.event){
  case 'error':setBusy(false);status(e.message,true);break;
  case 'generated':
-  dataReady=true;setBusy(false);counters=e.counts;history=[];$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
+  dataReady=true;setBusy(false);counters=e.counts;history=[];lastEvaluation=null;
+  datasetInfo={...e.metadata,counts:e.counts,baseline:e.baseline,generationMs:e.generationMs,estimate:e.estimate};$('#v2Counts').textContent=Object.entries(counters).map(([k,v])=>k+': '+fmt(v)).join(' · ');
   $('#v2DatasetMeta').textContent='Seed '+e.metadata.seed+' · '+fmt(e.metadata.count)+' cenários sintéticos · gerados em '+tms(e.generationMs)+'.';
   status('Dados sintéticos gerados. Treinamento e teste continuam separados. Nenhuma coleta física foi executada.');
   break;
  case 'initialized':
-  model=e.model;setBusy(false);history=model.trained?.history||[];lastSample=null;chosen=null;renderMetrics();render();
+  model=e.model;setBusy(false);history=model.trained?.history||[];lastSample=null;lastEvaluation=null;chosen=null;renderMetrics();render();
   status('Arquitetura inicializada: '+model.shape.join(' → ')+'. Pesos são matematicamente reais, mas ainda não comprovam aprendizado.');
   break;
  case 'epoch':
@@ -58,12 +60,12 @@ function receive({data:e}){
   $('#v2TrainMeta').textContent='Época '+e.stat.epoch+' · val. accuracy '+(e.stat.validation.accuracy*100).toFixed(1)+'% · loss '+e.stat.validation.loss.toFixed(4)+' · '+tms(e.elapsedMs);
   break;
  case 'trained':
-  model=e.model;setBusy(false);history=e.history;lastSample=null;
+  model=e.model;setBusy(false);history=e.history;lastSample=null;lastEvaluation=null;trainingMs=e.trainingMs;
   $('#v2Progress').value=100;renderMetrics();render();
   status('Treinamento concluído na CPU Web Worker em '+tms(e.trainingMs)+'. Métricas sintéticas não validam o robô físico.');
   break;
  case 'tested':
-  setBusy(false);const d=e.result;
+  setBusy(false);const d=e.result;lastEvaluation=d;
   $('#v2Results').textContent='Teste reservado: '+d.total+' amostras · accuracy '+(d.accuracy*100).toFixed(1)+'% · loss '+d.loss.toFixed(4)+
    '\nMatriz (real × previsto): '+JSON.stringify(d.matrix)+
    '\n'+d.classes.map(x=>x.label+' — precision '+x.precision.toFixed(3)+', recall '+x.recall.toFixed(3)+', F1 '+x.f1.toFixed(3)).join('\n');
@@ -113,6 +115,31 @@ $('#v2Cancel').addEventListener('click',()=>{if(busy)send('cancel');});
 $('#v2Test').addEventListener('click',()=>run('test'));
 $('#v2Sample').addEventListener('click',()=>run('sample',{index:Number($('#v2SampleIndex').value)}));
 $('#v2Save').addEventListener('click',()=>{if(model)download(model,'meca-neural-v2-model.json');});
+$('#v2Report').addEventListener('click',()=>{
+ if(!model){status('Inicialize ou importe uma arquitetura primeiro.',true);return;}
+ const id=$('#v2ExperimentId').value.trim();
+ if(!/^[a-zA-Z0-9_.-]{1,80}$/.test(id)){status('Experimento: use 1 a 80 caracteres alfanuméricos, _ . ou -.',true);return;}
+ const report={
+  schema:'MIH-V2-EXPERIMENT-v1',experiment_id:id,
+  created_at:new Date().toISOString(),origin:'synthetic_lab',
+  architecture:{shape:model.shape,activation:model.activation,labels:model.labels,
+    parameters:V.parameters(model.shape),model_origin:model.origin},
+  dataset:datasetInfo,training:model.trained,
+  environment:'browser-cpu-worker',trainingMs:trainingMs,
+  evaluation:lastEvaluation,
+  imported_file:imported?{origin:imported.origin,format:imported.format,compatible:imported.compatible,
+    missing_channels:imported.missing,physical_origin_authenticated:false}:null,
+  limits:['Resultados sintéticos não são validação no Mequinha físico.',
+   'Origem física declarada em arquivos não é autenticada.',
+   'Benchmark do runner GitHub não determina desempenho deste dispositivo.'],
+  meca:{observation:'Resultado experimental computado na CPU local quando disponível.',
+   hypothesis:'Diagnóstico neural físico permanece não verificado.',
+   proposal:'Coletar múltiplas sessões reais, rotular e separar por execução antes de avaliar generalização.',
+   decision:'Continuar coleta; não automatizar OpModes.'}
+ };
+ download(report,'meca-v2-experiment-'+id+'.json');
+ status('Relatório exportado com dados realmente disponíveis; campos não executados permanecem null.');
+});
 $('#v2History').addEventListener('click',()=>{if(!history.length){status('Sem histórico de treinamento para exportar.',true);return;}
  download({source:'synthetic_lab',architecture:model.shape,history,environment:'browser-cpu-worker'},'meca-v2-training-history.json');});
 $('#v2LoadBtn').addEventListener('click',()=>$('#v2ModelFile').click());
