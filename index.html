@@ -124,7 +124,7 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
  <div class="v2Status" id="v2Status" role="status">Aguardando inicialização.</div>
 </section>
 <section class="mainSection">
- <div class="bar"><div><h2>Mapa dos neurônios</h2><small id="networkState">Prévia da arquitetura · sem pesos carregados</small></div><div class="tools"><label class="fakebutton" for="modelFile" style="margin:0">📂 Abrir ZIP / C++<input id="modelFile" type="file" accept=".zip,.cpp,.h"></label><label class="fakebutton" for="csvFile" style="margin:0">📈 Abrir CSV<input id="csvFile" type="file" accept=".csv,text/csv"></label><button id="saveBtn">↧ Salvar imagem</button></div></div>
+ <div class="bar"><div><h2>Visualizador legado / Edge Impulse</h2><small id="networkState">Prévia da arquitetura · sem pesos carregados</small></div><div class="tools"><label class="fakebutton" for="modelFile" style="margin:0">📂 Abrir ZIP / C++<input id="modelFile" type="file" accept=".zip,.cpp,.h"></label><label class="fakebutton" for="csvFile" style="margin:0">📈 Abrir CSV<input id="csvFile" type="file" accept=".csv,text/csv"></label><button id="saveBtn">↧ Salvar imagem</button></div></div>
  <div class="canvasWrap"><canvas id="network"></canvas><div id="hoverHint">Passe o mouse sobre um neurônio para inspecionar. Clique para fixar.</div></div>
  <div class="legend"><span class="swatch"></span> Pesos positivos <span class="swatch neg"></span> Pesos negativos <span class="swatch gray"></span> Arquitetura ilustrativa (antes de importar) · <span class="chip">Selecione um neurônio</span></div>
  <div class="metrics"><div class="metric"><strong id="cntLayers">4</strong><span>Camadas</span></div><div class="metric"><strong id="cntNeurons">232</strong><span>Neurônios</span></div><div class="metric"><strong id="cntEdges">4.220</strong><span>Conexões</span></div><div class="metric"><strong id="modelStatus">Não carregado</strong><span>Pesos do modelo</span></div></div>
@@ -136,7 +136,7 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
  <div class="panel"><h3>04 · Inspeção do neurônio</h3><div id="nodeDetail" class="muted">Clique em uma bolinha para mostrar sua camada, ativação e conexões com pesos reais.</div></div>
 </aside>
 <section class="labSection" id="laboratorio">
- <div class="bar"><div><h2>Laboratório de treinamento · Meca Intelligence</h2><small>Gera conjuntos sintéticos, treina uma MLP no navegador e avalia dados reservados. Não treina o modelo INT8 importado.</small></div><span class="chip">Sem servidor · Sem chave de API</span></div>
+ <div class="bar"><div><h2>Laboratório V1 legado · Compatibilidade e testes anteriores</h2><small>Gera conjuntos sintéticos, treina uma MLP no navegador e avalia dados reservados. Não treina o modelo INT8 importado.</small></div><span class="chip">Sem servidor · Sem chave de API</span></div>
  <div class="labBody">
   <div class="labCard"><h3>01 · Gerar cenários</h3>
    <p>900 exemplos sintéticos a 20 Hz, com curvas, reversões, ruído, movimento reto, paradas e congelamentos da IMU.</p>
@@ -165,7 +165,7 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
 
 
 </main>
-<div class="footer">Meca Intelligence Browser Lab. Dois modelos independentes: exportação Edge Impulse INT8 (visualização/inferência aproximada) e MLP treinada no navegador (retropropagação real). Este visualizador não é a página original NN-Visualizer. O modelo e seus pesos não estão embutidos neste arquivo; são lidos somente do arquivo selecionado. O SDK do Edge Impulse contém condições de licença específicas: confirme que sua assinatura permite o uso e não publique arquivos de modelo sem verificar os termos. Dados sintéticos não validam falhas no Mequinha real.</div>
+<div class="footer">Meca Intelligence Hybrid · V2 CPU Web Worker + dois laboratórios legados independentes: exportação Edge Impulse INT8 (visualização/inferência aproximada) e MLP treinada no navegador (retropropagação real). Este visualizador não é a página original NN-Visualizer. O modelo e seus pesos não estão embutidos neste arquivo; são lidos somente do arquivo selecionado. O SDK do Edge Impulse contém condições de licença específicas: confirme que sua assinatura permite o uso e não publique arquivos de modelo sem verificar os termos. Dados sintéticos não validam falhas no Mequinha real.</div>
 <script>
 'use strict';
 const $=s=>document.querySelector(s);
