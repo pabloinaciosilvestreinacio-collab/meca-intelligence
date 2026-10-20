@@ -1,12 +1,15 @@
-# Keep licensed Edge Impulse SDKs, robot telemetry and personal data out of Git.
-*.tflite
-*.h5
-*cpp-mcu*.zip
-edge-impulse-sdk/
-model-parameters/
-tflite-model/
-private/
-real-data/
-*.log
+# Python local
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+local/
+*.sqlite3
+*.sqlite3-*
+# Dados físicos privados
+private_data/
+real_telemetry/
+*.parquet
+# Existing web / editor
 .DS_Store
-node_modules/
+Thumbs.db
