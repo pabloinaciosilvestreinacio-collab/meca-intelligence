@@ -200,7 +200,7 @@ function importTelemetry(content,name='',origin){
    const required=['run_id','timestamp','robot_config_id','code_version','experiment_id'];
    for(const key of required)if(typeof data[key]!=='string'||!data[key].trim())
     throw Error('MIH-V1: metadado obrigatório ausente: '+key);
-   if(!/^(\\d{4}-\\d{2}-\\d{2}T.+(?:Z|[+-]\\d{2}:\\d{2}))$/.test(data.timestamp)||!Number.isFinite(Date.parse(data.timestamp)))
+   if(!/^(\d{4}-\d{2}-\d{2}T.+(?:Z|[+-]\d{2}:\d{2}))$/.test(data.timestamp)||!Number.isFinite(Date.parse(data.timestamp)))
     throw Error('MIH-V1: timestamp ISO 8601 com timezone obrigatório.');
    const s=data.samples,normalized=[];
    for(let i=0;i<s.length;i++){
