@@ -114,6 +114,12 @@ main{max-width:1580px;margin:0 auto;padding:22px;display:grid;grid-template-colu
   <p id="v2ImportPrediction">Sem inferência.</p>
  </div>
  <div class="v2Card"><h3>09 · Tutorial interativo</h3><div id="v2Guide" aria-label="Oito aulas práticas de redes neurais"></div></div>
+ <div class="v2Card v2Double"><h3>10 · Comparador de dois modelos</h3>
+ <p>Importe dois modelos JSON treinados. Ambos serão avaliados com as mesmas amostras de teste sintético atualmente reservadas no Worker. Comparar a mesma prova repetidamente pode induzir sobreajuste.</p>
+ <label for="v2CompareFiles">Dois arquivos JSON<input id="v2CompareFiles" type="file" accept=".json,application/json" multiple></label>
+ <button id="v2Compare" disabled>Comparar previsões e arquitetura</button>
+ <pre id="v2Comparison">Nenhuma comparação executada.</pre>
+ </div>
  </div>
  <div class="v2Status" id="v2Status" role="status">Aguardando inicialização.</div>
 </section>
