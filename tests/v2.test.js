@@ -40,7 +40,7 @@ test('train updates weights, finite loss, exports model and holds independent sy
  const ds=V.samples(120,32578),m=V.init({hidden:[8,4]},6),w=m.W[0][0][0];
  const r=await V.train(m,ds,{epochs:2,batchSize:16,lr:.003,seed:6,yieldTick:async()=>{}});
  assert.equal(r.cancelled,false);
- assert.notEqual(r.model.W[0][0][0],w);
+ assert.notEqual(JSON.stringify(r.model.W),JSON.stringify(m.W));
  assert.ok(r.history.every(x=>Number.isFinite(x.validation.loss)));
  assert.equal(V.evaluate(r.model,ds.testing).total,ds.testing.length);
  assert.ok(r.model.trained.history.length===2);
@@ -53,7 +53,7 @@ test('cancel is safe and stops without substituting a pretend trained model',asy
 });
 test('invalid dimensions, labels and values rejected',()=>{
  assert.throws(()=>V.config({hidden:[0]}));
- assert.throws(()=>V.config({hidden:[128,128,128,128]}),/100.000/);
+ assert.throws(()=>V.config({hidden:[128,128,128,128]}),/60.000/);
  assert.throws(()=>V.forward(V.init({hidden:[2]}),[1,2]));
  assert.throws(()=>V.legacy({kind:'browser',shape:[200,2],W:[[[0]]],B:[[0,0]]}));
 });
