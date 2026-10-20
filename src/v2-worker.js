@@ -11,7 +11,7 @@ onmessage=async ({data:req})=>{
    busy=true;const started=performance.now();
    const cfg=req.options,estimate=MecaV2.estimate(cfg.count,cfg.shape,cfg.epochs);
    if(cfg.count>10000)throw Error('Mais de 10.000 amostras aguardam benchmark local. Selecione lote menor.');
-   data=MecaV2.samples(cfg.count,cfg.seed,cfg.split);model=null;
+   data=MecaV2.samples(cfg.count,cfg.seed,cfg.split);
    send('generated',{counts:Object.fromEntries(['training','validation','testing'].map(k=>[k,data[k].length])),
     metadata:data.metadata,estimate,generationMs:Math.round(performance.now()-started)});
   }else if(req.action==='initialize'){
