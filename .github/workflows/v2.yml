@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --test tests/core.test.js tests/v2.test.js
-      - run: node --check src/v2-core.js && node --check src/v2-worker.js
+      - run: node --check src/v2-core.js && node --check src/v2-worker.js && node --check src/v2-ui.js
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +23,14 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.58.0
       - run: npx playwright install --with-deps chromium
       - run: node --test tests/v2-browser.test.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neural-v2-chromium-screenshots
+          path: |
+            v2-desktop.png
+            v2-mobile.png
+          if-no-files-found: ignore
   benchmarks:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node tests/v2-benchmark.js > v2-benchmarks.json
+      - run: node tests/v2-benchmark.js | tee v2-benchmarks.json
       - uses: actions/upload-artifact@v4
         with:
           name: mih-v2-benchmarks
